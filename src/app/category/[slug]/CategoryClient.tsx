@@ -259,7 +259,10 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
 
     const handleCopy = (e: React.MouseEvent, text: string) => { e.stopPropagation(); navigator.clipboard.writeText(text); toast({ title: "Copiado" }); };
     const handleShare = async (e: React.MouseEvent, title: string, text: string) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title, text }); } catch (error) { console.error(error); } } else { handleCopy(e, `${title}\n\n${text}`); } };
-    const handleRecite = (e: React.MouseEvent, poemId: string) => { e.stopPropagation(); router.push(`/recite/${poemId}`); };
+    const handleRecite = (e: React.MouseEvent, poemId: string) => { 
+        e.stopPropagation(); 
+        router.push(`/recite/${poemId}`); // ❌ Esto podría estar generando un slug
+    };
 
     const handleEditPoem = (e: React.MouseEvent, poemId: string) => {
         e.stopPropagation();

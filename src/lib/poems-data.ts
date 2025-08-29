@@ -4,6 +4,7 @@ export type Poem = {
   id: string;
   title: string;
   poem: string;
+  author?: string; // <--- LÍNEA AÑADIDA
   createdAt: string; // ISO 8601 format
   likes: number;
   shares: number;
@@ -30,7 +31,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 15,
       "shares": 5,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen107.png",
       "imageHint": "universe eye"
     },
     {
@@ -39,7 +40,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 25,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen96.png",
       "imageHint": "lighthouse night"
     },
      {
@@ -48,7 +49,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 18,
       "shares": 7,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen39.png",
       "imageHint": "silent forest"
     },
     {
@@ -57,7 +58,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 30,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen79.png",
       "imageHint": "sea sand"
     },
     {
@@ -66,7 +67,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 22,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen26.png",
       "imageHint": "radiant sun"
     },
     {
@@ -75,7 +76,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-20T10:00:00.000Z",
         "likes": 19,
         "shares": 6,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen28.png",
         "imageHint": "time flying"
     },
     {
@@ -84,7 +85,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-19T10:00:00.000Z",
         "likes": 28,
         "shares": 14,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen27.png",
         "imageHint": "anchor storm"
     },
     {
@@ -93,7 +94,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-18T10:00:00.000Z",
         "likes": 21,
         "shares": 9,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen106.png",
         "imageHint": "may rain"
     },
     {
@@ -102,7 +103,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-17T10:00:00.000Z",
         "likes": 31,
         "shares": 11,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen60.png",
         "imageHint": "calm pause"
     },
     {
@@ -111,7 +112,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-16T10:00:00.000Z",
         "likes": 26,
         "shares": 13,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen107.png",
         "imageHint": "soul key"
     },
     {
@@ -120,7 +121,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-15T11:00:00.000Z",
         "likes": 23,
         "shares": 9,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen47.png",
         "imageHint": "cozy nest"
     },
     {
@@ -129,7 +130,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-14T11:00:00.000Z",
         "likes": 27,
         "shares": 11,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen23.png",
         "imageHint": "compass eyes"
     },
     {
@@ -138,7 +139,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-13T11:00:00.000Z",
         "likes": 20,
         "shares": 8,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen9.png",
         "imageHint": "speaking silence"
     },
     {
@@ -147,7 +148,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-12T11:00:00.000Z",
         "likes": 29,
         "shares": 15,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen10.png",
         "imageHint": "river sea"
     },
     {
@@ -156,7 +157,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-11T11:00:00.000Z",
         "likes": 24,
         "shares": 10,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen53.png",
         "imageHint": "moonlit face"
     },
     {
@@ -165,7 +166,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-10T11:00:00.000Z",
         "likes": 32,
         "shares": 14,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen86.png",
         "imageHint": "colorful kisses"
     },
     {
@@ -174,7 +175,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-09T11:00:00.000Z",
         "likes": 18,
         "shares": 9,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen53.png",
         "imageHint": "certainty chaos"
     },
     {
@@ -183,7 +184,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-08T11:00:00.000Z",
         "likes": 33,
         "shares": 16,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen2.png",
         "imageHint": "home you"
     },
     {
@@ -192,7 +193,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-07T11:00:00.000Z",
         "likes": 25,
         "shares": 12,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen20.png",
         "imageHint": "heartbeat verse"
     },
     {
@@ -201,7 +202,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-06T11:00:00.000Z",
         "likes": 28,
         "shares": 13,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen38.png",
         "imageHint": "magic existence"
     },
     {
@@ -210,7 +211,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-05T11:00:00.000Z",
         "likes": 22,
         "shares": 7,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen40.png",
         "imageHint": "lost eden"
     },
     {
@@ -219,7 +220,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-04T11:00:00.000Z",
         "likes": 31,
         "shares": 11,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen71.png",
         "imageHint": "skin recognition"
     },
     {
@@ -228,7 +229,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-03T11:00:00.000Z",
         "likes": 26,
         "shares": 10,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen44.png",
         "imageHint": "soul aroma"
     },
     {
@@ -237,7 +238,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-02T11:00:00.000Z",
         "likes": 35,
         "shares": 17,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen41.png",
         "imageHint": "destiny detour"
     },
     {
@@ -246,7 +247,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-07-01T11:00:00.000Z",
         "likes": 29,
         "shares": 14,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen66.png",
         "imageHint": "eternal refuge"
     },
     {
@@ -255,7 +256,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-06-30T11:00:00.000Z",
         "likes": 27,
         "shares": 13,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen60.png",
         "imageHint": "polar star"
     },
     {
@@ -264,7 +265,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-06-29T11:00:00.000Z",
         "likes": 24,
         "shares": 9,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen67.png",
         "imageHint": "world truce"
     },
     {
@@ -273,7 +274,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-06-28T11:00:00.000Z",
         "likes": 21,
         "shares": 8,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen64.png",
         "imageHint": "silk voice"
     },
     {
@@ -282,7 +283,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-06-27T11:00:00.000Z",
         "likes": 34,
         "shares": 18,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen66.png",
         "imageHint": "puzzle piece"
     },
     {
@@ -291,7 +292,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-06-26T11:00:00.000Z",
         "likes": 30,
         "shares": 15,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen92.png",
         "imageHint": "love roots"
     },
     {
@@ -300,7 +301,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 12,
       "shares": 4,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "footprint sand"
     },
     {
@@ -309,7 +310,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 20,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen7.png",
       "imageHint": "compass eyes"
     },
     {
@@ -318,7 +319,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 25,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "fire kiss"
     },
     {
@@ -327,7 +328,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 30,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "laughing music"
     },
     {
@@ -336,7 +337,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 28,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "ocean waves"
     },
     {
@@ -345,7 +346,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 35,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen80.png",
       "imageHint": "sky gift"
     },
     {
@@ -354,7 +355,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 22,
       "shares": 9,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen106.png",
       "imageHint": "poem writing"
     },
     {
@@ -363,7 +364,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 18,
       "shares": 7,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "invisible magnet"
     },
     {
@@ -372,7 +373,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 26,
       "shares": 13,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen102.png",
       "imageHint": "love anchor"
     },
     {
@@ -381,7 +382,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 32,
       "shares": 14,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "love coffee"
     },
     {
@@ -390,7 +391,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 19,
       "shares": 6,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen3.png",
       "imageHint": "rain kisses"
     },
     {
@@ -399,7 +400,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 27,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen74.png",
       "imageHint": "mole constellation"
     },
     {
@@ -408,7 +409,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 38,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen88.png",
       "imageHint": "heartbeat song"
     },
     {
@@ -417,7 +418,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 40,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen10.png",
       "imageHint": "hug home"
     },
     {
@@ -426,7 +427,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 24,
       "shares": 9,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen57.png",
       "imageHint": "sweet vertigo"
     },
     {
@@ -435,7 +436,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 33,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen23.png",
       "imageHint": "life puzzle"
     },
     {
@@ -444,7 +445,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 21,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen72.png",
       "imageHint": "favorite conversation"
     },
     {
@@ -453,7 +454,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 29,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen12.png",
       "imageHint": "real magic"
     },
     {
@@ -462,7 +463,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 31,
       "shares": 13,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "my north"
     },
     {
@@ -471,7 +472,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 23,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen64.png",
       "imageHint": "soul echo"
     },
     {
@@ -480,7 +481,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 36,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "desert island"
     },
     {
@@ -489,7 +490,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 42,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "sunrise twice"
     },
     {
@@ -498,7 +499,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 34,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen88.png",
       "imageHint": "deep roots"
     },
     {
@@ -507,7 +508,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 39,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen49.png",
       "imageHint": "love oxygen"
     },
     {
@@ -516,7 +517,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 28,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen28.png",
       "imageHint": "gravity attraction"
     },
     {
@@ -525,7 +526,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 45,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen77.png",
       "imageHint": "smile universe"
     },
     {
@@ -534,7 +535,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 37,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen70.png",
       "imageHint": "time stops"
     },
     {
@@ -543,7 +544,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 26,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen101.png",
       "imageHint": "indelible ink"
     },
     {
@@ -552,7 +553,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 41,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen23.png",
       "imageHint": "heart key"
     },
     {
@@ -561,7 +562,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 44,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen38.png",
       "imageHint": "favorite addiction"
     },
     {
@@ -570,7 +571,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 32,
       "shares": 13,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "mind photo"
     },
     {
@@ -579,7 +580,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 36,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "sunflower sun"
     },
     {
@@ -588,7 +589,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 48,
       "shares": 28,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen76.png",
       "imageHint": "infinity love"
     },
     {
@@ -597,7 +598,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 35,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen100.png",
       "imageHint": "color painting"
     },
     {
@@ -606,7 +607,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 43,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen107.png",
       "imageHint": "found treasure"
     },
     {
@@ -615,7 +616,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 39,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen98.png",
       "imageHint": "chaos calm"
     },
     {
@@ -624,7 +625,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 30,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen49.png",
       "imageHint": "lullaby voice"
     },
     {
@@ -633,7 +634,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 50,
       "shares": 30,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "home together"
     },
     {
@@ -642,7 +643,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 46,
       "shares": 26,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen73.png",
       "imageHint": "made light"
     },
     {
@@ -651,7 +652,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 47,
       "shares": 27,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen19.png",
       "imageHint": "dream end"
     }
   ],
@@ -662,7 +663,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 40,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen55.png",
       "imageHint": "skin map"
     },
     {
@@ -671,7 +672,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 35,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "lovers gaze"
     },
      {
@@ -680,7 +681,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 28,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen95.png",
       "imageHint": "dream architect"
     },
     {
@@ -689,7 +690,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 45,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen52.png",
       "imageHint": "healing hug"
     },
     {
@@ -698,7 +699,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-15T12:00:00.000Z",
       "likes": 33,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen41.png",
       "imageHint": "soul melody"
     },
     {
@@ -707,7 +708,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-14T12:00:00.000Z",
       "likes": 42,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen7.png",
       "imageHint": "universe eyes"
     },
     {
@@ -716,7 +717,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-13T12:00:00.000Z",
       "likes": 38,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen80.png",
       "imageHint": "involuntary poetry"
     },
     {
@@ -725,7 +726,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-12T12:00:00.000Z",
       "likes": 41,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "sweet shipwreck"
     },
     {
@@ -734,7 +735,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-11T12:00:00.000Z",
       "likes": 36,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "sun tattoo"
     },
     {
@@ -743,7 +744,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-10T12:00:00.000Z",
       "likes": 39,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen98.png",
       "imageHint": "secret code"
     },
     {
@@ -752,7 +753,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-09T12:00:00.000Z",
       "likes": 44,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen15.png",
       "imageHint": "stopped clock"
     },
     {
@@ -761,7 +762,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-08T12:00:00.000Z",
       "likes": 37,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen38.png",
       "imageHint": "star thief"
     },
     {
@@ -770,7 +771,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-07T12:00:00.000Z",
       "likes": 46,
       "shares": 26,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen73.png",
       "imageHint": "sweet addiction"
     },
     {
@@ -779,7 +780,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-06T12:00:00.000Z",
       "likes": 34,
       "shares": 14,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen79.png",
       "imageHint": "zero gravity"
     },
     {
@@ -788,7 +789,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-05T12:00:00.000Z",
       "likes": 43,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen30.png",
       "imageHint": "watercolor life"
     },
     {
@@ -797,7 +798,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-04T12:00:00.000Z",
       "likes": 48,
       "shares": 28,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen2.png",
       "imageHint": "forbidden garden"
     },
     {
@@ -806,7 +807,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-03T12:00:00.000Z",
       "likes": 47,
       "shares": 27,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen56.png",
       "imageHint": "embrace homeland"
     },
     {
@@ -815,7 +816,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-02T12:00:00.000Z",
       "likes": 39,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen39.png",
       "imageHint": "name echo"
     },
     {
@@ -824,7 +825,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-01T12:00:00.000Z",
       "likes": 41,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen59.png",
       "imageHint": "butterfly effect"
     },
     {
@@ -833,7 +834,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-30T12:00:00.000Z",
       "likes": 38,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen6.png",
       "imageHint": "voice soundtrack"
     },
     {
@@ -842,7 +843,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-29T12:00:00.000Z",
       "likes": 49,
       "shares": 29,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen85.png",
       "imageHint": "love religion"
     },
     {
@@ -851,7 +852,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-28T12:00:00.000Z",
       "likes": 44,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "time measure"
     },
     {
@@ -860,7 +861,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-27T12:00:00.000Z",
       "likes": 45,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen9.png",
       "imageHint": "fire ice"
     },
     {
@@ -869,7 +870,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-26T12:00:00.000Z",
       "likes": 50,
       "shares": 30,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen64.png",
       "imageHint": "my luck"
     },
     {
@@ -878,7 +879,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 42,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "skin poetry"
     },
     {
@@ -887,7 +888,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 38,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen99.png",
       "imageHint": "soul dance"
     },
     {
@@ -896,7 +897,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 45,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen90.png",
       "imageHint": "love eclipse"
     },
     {
@@ -905,7 +906,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 40,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen58.png",
       "imageHint": "laugh song"
     },
     {
@@ -914,7 +915,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 48,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen53.png",
       "imageHint": "eyes lighthouse"
     },
     {
@@ -923,7 +924,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 50,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen94.png",
       "imageHint": "skin language"
     },
     {
@@ -932,7 +933,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 43,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen5.png",
       "imageHint": "building us"
     },
     {
@@ -941,7 +942,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 46,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "aged wine"
     },
     {
@@ -950,7 +951,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 52,
       "shares": 28,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen60.png",
       "imageHint": "red thread"
     },
     {
@@ -959,7 +960,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 39,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen91.png",
       "imageHint": "name lips"
     },
     {
@@ -968,7 +969,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 41,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "perfect symphony"
     },
     {
@@ -977,7 +978,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 47,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen2.png",
       "imageHint": "gaze color"
     },
     {
@@ -986,7 +987,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 55,
       "shares": 30,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "kiss flavor"
     },
     {
@@ -995,7 +996,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 49,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen84.png",
       "imageHint": "piece heaven"
     },
     {
@@ -1004,7 +1005,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 44,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen51.png",
       "imageHint": "dream thief"
     },
     {
@@ -1013,7 +1014,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 37,
       "shares": 14,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "cardinal point"
     },
     {
@@ -1022,7 +1023,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 51,
       "shares": 26,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen1.png",
       "imageHint": "heart echo"
     },
     {
@@ -1031,7 +1032,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 53,
       "shares": 27,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen21.png",
       "imageHint": "hug peace"
     },
     {
@@ -1040,7 +1041,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 56,
       "shares": 32,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen36.png",
       "imageHint": "sun days"
     },
     {
@@ -1049,7 +1050,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 46,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen65.png",
       "imageHint": "eyes well"
     }
   ],
@@ -1060,7 +1061,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 50,
       "shares": 30,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen5.png",
       "imageHint": "sweet torture"
     },
     {
@@ -1069,7 +1070,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 48,
       "shares": 28,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "ink desire"
     },
     {
@@ -1078,7 +1079,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-10T22:00:00.000Z",
       "likes": 55,
       "shares": 35,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen21.png",
       "imageHint": "night confession"
     },
     {
@@ -1087,7 +1088,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-09T22:00:00.000Z",
       "likes": 52,
       "shares": 32,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen7.png",
       "imageHint": "moles map"
     },
     {
@@ -1096,7 +1097,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-08T22:00:00.000Z",
       "likes": 58,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen43.png",
       "imageHint": "insatiable thirst"
     },
     {
@@ -1105,7 +1106,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-07T22:00:00.000Z",
       "likes": 60,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "private fire"
     },
     {
@@ -1114,7 +1115,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-06T22:00:00.000Z",
       "likes": 56,
       "shares": 36,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "voluntary prisoner"
     },
     {
@@ -1123,7 +1124,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-05T22:00:00.000Z",
       "likes": 62,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "designer drug"
     },
     {
@@ -1132,7 +1133,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-04T22:00:00.000Z",
       "likes": 59,
       "shares": 39,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen6.png",
       "imageHint": "unconditional surrender"
     },
     {
@@ -1141,7 +1142,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-03T22:00:00.000Z",
       "likes": 54,
       "shares": 34,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen46.png",
       "imageHint": "body language"
     },
     {
@@ -1150,7 +1151,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-02T22:00:00.000Z",
       "likes": 61,
       "shares": 41,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen106.png",
       "imageHint": "body gravity"
     },
     {
@@ -1159,7 +1160,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-01T22:00:00.000Z",
       "likes": 57,
       "shares": 37,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen89.png",
       "imageHint": "secret pact"
     },
     {
@@ -1168,7 +1169,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-30T22:00:00.000Z",
       "likes": 53,
       "shares": 33,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "blessed insomnia"
     },
     {
@@ -1177,7 +1178,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-29T22:00:00.000Z",
       "likes": 63,
       "shares": 43,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen80.png",
       "imageHint": "voracity love"
     },
     {
@@ -1186,7 +1187,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-28T22:00:00.000Z",
       "likes": 58,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen96.png",
       "imageHint": "kissing scars"
     },
     {
@@ -1195,7 +1196,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-27T22:00:00.000Z",
       "likes": 55,
       "shares": 35,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen59.png",
       "imageHint": "love revolution"
     },
     {
@@ -1204,7 +1205,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-26T22:00:00.000Z",
       "likes": 60,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen45.png",
       "imageHint": "body score"
     },
     {
@@ -1213,7 +1214,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-25T22:00:00.000Z",
       "likes": 56,
       "shares": 36,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen91.png",
       "imageHint": "desire architecture"
     },
     {
@@ -1222,7 +1223,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-24T22:00:00.000Z",
       "likes": 52,
       "shares": 32,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen104.png",
       "imageHint": "tightrope walker"
     },
     {
@@ -1231,7 +1232,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-23T22:00:00.000Z",
       "likes": 54,
       "shares": 34,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "soul password"
     },
     {
@@ -1240,7 +1241,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-22T22:00:00.000Z",
       "likes": 59,
       "shares": 39,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen87.png",
       "imageHint": "eye vertigo"
     },
     {
@@ -1249,7 +1250,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-21T22:00:00.000Z",
       "likes": 57,
       "shares": 37,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen63.png",
       "imageHint": "love equation"
     },
     {
@@ -1258,7 +1259,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-20T22:00:00.000Z",
       "likes": 61,
       "shares": 41,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen19.png",
       "imageHint": "secret choreography"
     },
     {
@@ -1267,7 +1268,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-19T22:00:00.000Z",
       "likes": 55,
       "shares": 35,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen107.png",
       "imageHint": "love spell"
     },
     {
@@ -1276,7 +1277,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-18T22:00:00.000Z",
       "likes": 58,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen58.png",
       "imageHint": "private ocean"
     },
     {
@@ -1285,7 +1286,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-17T22:00:00.000Z",
       "likes": 62,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen97.png",
       "imageHint": "love lightning"
     },
     {
@@ -1294,7 +1295,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-16T22:00:00.000Z",
       "likes": 60,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "anchor sail"
     },
     {
@@ -1303,7 +1304,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 58,
       "shares": 35,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen94.png",
       "imageHint": "open heart"
     },
     {
@@ -1312,7 +1313,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 65,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen77.png",
       "imageHint": "urgent desire"
     },
     {
@@ -1321,7 +1322,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 70,
       "shares": 45,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "perfect crime"
     },
     {
@@ -1330,7 +1331,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 68,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen55.png",
       "imageHint": "madness recipe"
     },
     {
@@ -1339,7 +1340,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 66,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "skin contract"
     },
     {
@@ -1348,7 +1349,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 62,
       "shares": 36,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen9.png",
       "imageHint": "future memories"
     },
     {
@@ -1357,7 +1358,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 72,
       "shares": 48,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen44.png",
       "imageHint": "health warning"
     },
     {
@@ -1366,7 +1367,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 69,
       "shares": 41,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen106.png",
       "imageHint": "desire language"
     },
     {
@@ -1375,7 +1376,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 64,
       "shares": 37,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "urgent notification"
     },
     {
@@ -1384,7 +1385,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 67,
       "shares": 39,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen44.png",
       "imageHint": "name fire"
     },
     {
@@ -1393,7 +1394,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 71,
       "shares": 46,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen98.png",
       "imageHint": "love diagnosis"
     },
     {
@@ -1402,7 +1403,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 75,
       "shares": 50,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen101.png",
       "imageHint": "indecent proposal"
     },
     {
@@ -1411,7 +1412,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 63,
       "shares": 34,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen60.png",
       "imageHint": "feelings embargo"
     },
     {
@@ -1420,7 +1421,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 65,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen54.png",
       "imageHint": "castaway sos"
     },
     {
@@ -1429,7 +1430,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 68,
       "shares": 41,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen68.png",
       "imageHint": "pending subject"
     }
   ],
@@ -1440,7 +1441,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 100,
       "shares": 50,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "coffee eyes"
     },
     {
@@ -1449,7 +1450,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 90,
       "shares": 45,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen89.png",
       "imageHint": "google search"
     },
     {
@@ -1458,7 +1459,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-05T18:00:00.000Z",
       "likes": 85,
       "shares": 48,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "perfect plan"
     },
     {
@@ -1467,7 +1468,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-01T18:00:00.000Z",
       "likes": 95,
       "shares": 55,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "art museum"
     },
     {
@@ -1476,7 +1477,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-30T18:00:00.000Z",
       "likes": 88,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "speeding heart"
     },
     {
@@ -1485,7 +1486,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-29T18:00:00.000Z",
       "likes": 92,
       "shares": 52,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen66.png",
       "imageHint": "weather forecast"
     },
     {
@@ -1494,7 +1495,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-28T18:00:00.000Z",
       "likes": 82,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "wifi connection"
     },
     {
@@ -1503,7 +1504,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-27T18:00:00.000Z",
       "likes": 98,
       "shares": 60,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen47.png",
       "imageHint": "shooting star"
     },
     {
@@ -1512,7 +1513,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-26T18:00:00.000Z",
       "likes": 86,
       "shares": 44,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen47.png",
       "imageHint": "heart thief"
     },
     {
@@ -1521,7 +1522,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-25T18:00:00.000Z",
       "likes": 89,
       "shares": 47,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen70.png",
       "imageHint": "heart palace"
     },
     {
@@ -1530,7 +1531,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-24T18:00:00.000Z",
       "likes": 84,
       "shares": 41,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen86.png",
       "imageHint": "favorite subject"
     },
     {
@@ -1539,7 +1540,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-23T18:00:00.000Z",
       "likes": 93,
       "shares": 53,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen84.png",
       "imageHint": "magic trick"
     },
     {
@@ -1548,7 +1549,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-22T18:00:00.000Z",
       "likes": 96,
       "shares": 58,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "sun moon"
     },
     {
@@ -1557,7 +1558,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-21T18:00:00.000Z",
       "likes": 87,
       "shares": 46,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen36.png",
       "imageHint": "first kiss"
     },
     {
@@ -1566,7 +1567,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-20T18:00:00.000Z",
       "likes": 91,
       "shares": 51,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen73.png",
       "imageHint": "main course"
     },
     {
@@ -1575,7 +1576,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-19T18:00:00.000Z",
       "likes": 83,
       "shares": 39,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "superpower thinking"
     },
     {
@@ -1584,7 +1585,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-18T18:00:00.000Z",
       "likes": 94,
       "shares": 56,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen60.png",
       "imageHint": "netflix plan"
     },
     {
@@ -1593,7 +1594,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-17T18:00:00.000Z",
       "likes": 90,
       "shares": 49,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen99.png",
       "imageHint": "earthquake world"
     },
     {
@@ -1602,7 +1603,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-16T18:00:00.000Z",
       "likes": 99,
       "shares": 62,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "future smile"
     },
     {
@@ -1611,7 +1612,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-15T18:00:00.000Z",
       "likes": 81,
       "shares": 38,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen58.png",
       "imageHint": "pizza heart"
     },
     {
@@ -1620,7 +1621,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-14T18:00:00.000Z",
       "likes": 97,
       "shares": 59,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen55.png",
       "imageHint": "dream reality"
     },
     {
@@ -1629,7 +1630,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-13T18:00:00.000Z",
       "likes": 89,
       "shares": 48,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen11.png",
       "imageHint": "perfect smile"
     },
     {
@@ -1638,7 +1639,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-12T18:00:00.000Z",
       "likes": 91,
       "shares": 50,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen16.png",
       "imageHint": "lost eyes"
     },
     {
@@ -1647,7 +1648,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-11T18:00:00.000Z",
       "likes": 85,
       "shares": 43,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen22.png",
       "imageHint": "phone charger"
     },
     {
@@ -1656,7 +1657,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-10T18:00:00.000Z",
       "likes": 101,
       "shares": 65,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen104.png",
       "imageHint": "eighth wonder"
     },
     {
@@ -1665,7 +1666,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-09T18:00:00.000Z",
       "likes": 88,
       "shares": 45,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen84.png",
       "imageHint": "beautiful name"
     },
     {
@@ -1674,7 +1675,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-08T18:00:00.000Z",
       "likes": 96,
       "shares": 57,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen15.png",
       "imageHint": "end world"
     },
     {
@@ -1683,7 +1684,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-07T18:00:00.000Z",
       "likes": 92,
       "shares": 54,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "repeat playlist"
     },
     {
@@ -1692,7 +1693,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-06T18:00:00.000Z",
       "likes": 86,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen73.png",
       "imageHint": "ask permission"
     },
     {
@@ -1701,7 +1702,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-05T18:00:00.000Z",
       "likes": 105,
       "shares": 70,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen47.png",
       "imageHint": "love first sight"
     },
     {
@@ -1710,7 +1711,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 95,
       "shares": 55,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen102.png",
       "imageHint": "perfect accent"
     },
     {
@@ -1719,7 +1720,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 88,
       "shares": 48,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen84.png",
       "imageHint": "altered gravity"
     },
     {
@@ -1728,7 +1729,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 102,
       "shares": 65,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "crime punishment"
     },
     {
@@ -1737,7 +1738,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 85,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen83.png",
       "imageHint": "missed call"
     },
     {
@@ -1746,7 +1747,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 93,
       "shares": 52,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen97.png",
       "imageHint": "secret recipe"
     },
     {
@@ -1755,7 +1756,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 90,
       "shares": 50,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen49.png",
       "imageHint": "love GPS"
     },
     {
@@ -1764,7 +1765,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 110,
       "shares": 75,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen19.png",
       "imageHint": "breaking news"
     },
     {
@@ -1773,7 +1774,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 98,
       "shares": 60,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen13.png",
       "imageHint": "future prediction"
     },
     {
@@ -1782,7 +1783,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 89,
       "shares": 47,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen105.png",
       "imageHint": "body temperature"
     },
     {
@@ -1791,7 +1792,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 96,
       "shares": 58,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen15.png",
       "imageHint": "favorite flower"
     }
   ],
@@ -1802,7 +1803,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 70,
       "shares": 40,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen2.png",
       "imageHint": "one year"
     },
     {
@@ -1811,7 +1812,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 65,
       "shares": 35,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen64.png",
       "imageHint": "golden thread"
     },
     {
@@ -1820,7 +1821,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-20T11:00:00.000Z",
       "likes": 80,
       "shares": 60,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen9.png",
       "imageHint": "five years"
     },
     {
@@ -1829,7 +1830,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-19T11:00:00.000Z",
       "likes": 90,
       "shares": 70,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen86.png",
       "imageHint": "ten years"
     },
     {
@@ -1838,7 +1839,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-18T11:00:00.000Z",
       "likes": 75,
       "shares": 45,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "first date"
     },
     {
@@ -1847,7 +1848,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-17T11:00:00.000Z",
       "likes": 72,
       "shares": 42,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "paper anniversary"
     },
     {
@@ -1856,7 +1857,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-16T11:00:00.000Z",
       "likes": 78,
       "shares": 50,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen29.png",
       "imageHint": "best yes"
     },
     {
@@ -1865,7 +1866,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-15T11:00:00.000Z",
       "likes": 82,
       "shares": 55,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen56.png",
       "imageHint": "love foundations"
     },
     {
@@ -1874,7 +1875,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-14T11:00:00.000Z",
       "likes": 77,
       "shares": 48,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen85.png",
       "imageHint": "collecting moments"
     },
     {
@@ -1883,7 +1884,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-13T11:00:00.000Z",
       "likes": 85,
       "shares": 65,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen85.png",
       "imageHint": "love growing"
     },
     {
@@ -1892,7 +1893,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-12T11:00:00.000Z",
       "likes": 79,
       "shares": 52,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen53.png",
       "imageHint": "our dance"
     },
     {
@@ -1901,7 +1902,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-11T11:00:00.000Z",
       "likes": 81,
       "shares": 58,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen99.png",
       "imageHint": "toast us"
     },
     {
@@ -1910,7 +1911,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-10T11:00:00.000Z",
       "likes": 76,
       "shares": 46,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen37.png",
       "imageHint": "puzzle fit"
     },
     {
@@ -1919,7 +1920,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-09T11:00:00.000Z",
       "likes": 83,
       "shares": 61,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen102.png",
       "imageHint": "adventure continues"
     },
     {
@@ -1928,7 +1929,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-08T11:00:00.000Z",
       "likes": 88,
       "shares": 68,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen38.png",
       "imageHint": "time travel"
     },
     {
@@ -1937,7 +1938,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-07T11:00:00.000Z",
       "likes": 84,
       "shares": 59,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen25.png",
       "imageHint": "unbeatable team"
     },
     {
@@ -1946,7 +1947,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-06T11:00:00.000Z",
       "likes": 80,
       "shares": 53,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen88.png",
       "imageHint": "love soundtrack"
     },
     {
@@ -1955,7 +1956,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-05T11:00:00.000Z",
       "likes": 78,
       "shares": 51,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen94.png",
       "imageHint": "favorite season"
     },
     {
@@ -1964,7 +1965,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-04T11:00:00.000Z",
       "likes": 86,
       "shares": 64,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen64.png",
       "imageHint": "counting stars"
     },
     {
@@ -1973,7 +1974,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-03T11:00:00.000Z",
       "likes": 89,
       "shares": 69,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen41.png",
       "imageHint": "life lighthouse"
     },
     {
@@ -1982,7 +1983,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-02T11:00:00.000Z",
       "likes": 82,
       "shares": 57,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen95.png",
       "imageHint": "perfect recipe"
     },
     {
@@ -1991,7 +1992,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-01T11:00:00.000Z",
       "likes": 91,
       "shares": 72,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen21.png",
       "imageHint": "home with you"
     },
     {
@@ -2000,7 +2001,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-31T11:00:00.000Z",
       "likes": 87,
       "shares": 66,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen33.png",
       "imageHint": "love lottery"
     },
     {
@@ -2009,7 +2010,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-30T11:00:00.000Z",
       "likes": 84,
       "shares": 62,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen46.png",
       "imageHint": "love garden"
     },
     {
@@ -2018,7 +2019,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-29T11:00:00.000Z",
       "likes": 81,
       "shares": 56,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "book pages"
     },
     {
@@ -2027,7 +2028,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-28T11:00:00.000Z",
       "likes": 95,
       "shares": 75,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen104.png",
       "imageHint": "fifteen springs"
     },
     {
@@ -2036,7 +2037,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-27T11:00:00.000Z",
       "likes": 98,
       "shares": 80,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen73.png",
       "imageHint": "twenty winters"
     },
     {
@@ -2045,7 +2046,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-26T11:00:00.000Z",
       "likes": 100,
       "shares": 85,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen46.png",
       "imageHint": "silver wedding"
     },
     {
@@ -2054,7 +2055,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-25T11:00:00.000Z",
       "likes": 92,
       "shares": 73,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen96.png",
       "imageHint": "same dream"
     },
     {
@@ -2063,7 +2064,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 88,
       "shares": 60,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen95.png",
       "imageHint": "same smile"
     },
     {
@@ -2072,7 +2073,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 95,
       "shares": 68,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "heart contract"
     },
     {
@@ -2081,7 +2082,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 92,
       "shares": 65,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen54.png",
       "imageHint": "memory map"
     },
     {
@@ -2090,7 +2091,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 90,
       "shares": 62,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen60.png",
       "imageHint": "laughing wedding"
     },
     {
@@ -2099,7 +2100,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 85,
       "shares": 58,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen26.png",
       "imageHint": "flying years"
     },
     {
@@ -2108,7 +2109,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 98,
       "shares": 72,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen89.png",
       "imageHint": "our universe"
     },
     {
@@ -2117,7 +2118,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 100,
       "shares": 75,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen38.png",
       "imageHint": "flame alive"
     },
     {
@@ -2126,7 +2127,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 110,
       "shares": 80,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen2.png",
       "imageHint": "best yes"
     },
     {
@@ -2135,7 +2136,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 93,
       "shares": 66,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "new chapter"
     },
     {
@@ -2144,7 +2145,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 96,
       "shares": 70,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen38.png",
       "imageHint": "cheers future"
     }
   ],
@@ -2155,7 +2156,7 @@ const rawPoemsData: PoemsByCategory = {
        "createdAt": new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 5,
       "shares": 2,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen79.png",
       "imageHint": "fire ashes"
     },
     {
@@ -2164,7 +2165,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString(),
       "likes": 10,
       "shares": 3,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen71.png",
       "imageHint": "empty space"
     },
     {
@@ -2173,7 +2174,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-10T15:00:00.000Z",
       "likes": 8,
       "shares": 1,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen55.png",
       "imageHint": "broken photograph"
     },
     {
@@ -2182,7 +2183,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-09T15:00:00.000Z",
       "likes": 12,
       "shares": 4,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "wrong direction"
     },
     {
@@ -2191,7 +2192,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-08T15:00:00.000Z",
       "likes": 7,
       "shares": 2,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen79.png",
       "imageHint": "invisible ink"
     },
     {
@@ -2200,7 +2201,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-07T15:00:00.000Z",
       "likes": 11,
       "shares": 5,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen6.png",
       "imageHint": "untuned song"
     },
     {
@@ -2209,7 +2210,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-06T15:00:00.000Z",
       "likes": 15,
       "shares": 6,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen97.png",
       "imageHint": "summer thief"
     },
     {
@@ -2218,7 +2219,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-05T15:00:00.000Z",
       "likes": 9,
       "shares": 3,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen72.png",
       "imageHint": "sand castle"
     },
     {
@@ -2227,7 +2228,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-04T15:00:00.000Z",
       "likes": 13,
       "shares": 4,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen99.png",
       "imageHint": "withered garden"
     },
     {
@@ -2236,7 +2237,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-03T15:00:00.000Z",
       "likes": 18,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen30.png",
       "imageHint": "goodbye echo"
     },
     {
@@ -2245,7 +2246,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-02T15:00:00.000Z",
       "likes": 14,
       "shares": 7,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen101.png",
       "imageHint": "rusty anchor"
     },
     {
@@ -2254,7 +2255,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-06-01T15:00:00.000Z",
       "likes": 16,
       "shares": 9,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "pending conversation"
     },
     {
@@ -2263,7 +2264,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-31T15:00:00.000Z",
       "likes": 19,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen27.png",
       "imageHint": "memory poison"
     },
     {
@@ -2272,7 +2273,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-30T15:00:00.000Z",
       "likes": 20,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen97.png",
       "imageHint": "perfume ghost"
     },
     {
@@ -2281,7 +2282,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-29T15:00:00.000Z",
       "likes": 22,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen21.png",
       "imageHint": "known stranger"
     },
     {
@@ -2290,7 +2291,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-28T15:00:00.000Z",
       "likes": 17,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen45.png",
       "imageHint": "half bed"
     },
     {
@@ -2299,7 +2300,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-27T15:00:00.000Z",
       "likes": 14,
       "shares": 6,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen18.png",
       "imageHint": "final point"
     },
     {
@@ -2308,7 +2309,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-26T15:00:00.000Z",
       "likes": 21,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen91.png",
       "imageHint": "heart mourning"
     },
     {
@@ -2317,7 +2318,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-25T15:00:00.000Z",
       "likes": 18,
       "shares": 9,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen78.png",
       "imageHint": "name scar"
     },
     {
@@ -2326,7 +2327,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-24T15:00:00.000Z",
       "likes": 23,
       "shares": 13,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen94.png",
       "imageHint": "art forgetting"
     },
     {
@@ -2335,7 +2336,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-23T15:00:00.000Z",
       "likes": 16,
       "shares": 7,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen54.png",
       "imageHint": "we ruins"
     },
     {
@@ -2344,7 +2345,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-22T15:00:00.000Z",
       "likes": 19,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen52.png",
       "imageHint": "last dance"
     },
     {
@@ -2353,7 +2354,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-21T15:00:00.000Z",
       "likes": 15,
       "shares": 5,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen76.png",
       "imageHint": "silent phone"
     },
     {
@@ -2362,7 +2363,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-20T15:00:00.000Z",
       "likes": 12,
       "shares": 4,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen101.png",
       "imageHint": "taste defeat"
     },
     {
@@ -2371,7 +2372,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-19T15:00:00.000Z",
       "likes": 24,
       "shares": 14,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen98.png",
       "imageHint": "maybe weight"
     },
     {
@@ -2380,7 +2381,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-18T15:00:00.000Z",
       "likes": 20,
       "shares": 9,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen8.png",
       "imageHint": "soul keys"
     },
     {
@@ -2389,7 +2390,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-17T15:00:00.000Z",
       "likes": 18,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen47.png",
       "imageHint": "erase footprint"
     },
     {
@@ -2398,7 +2399,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-05-16T15:00:00.000Z",
       "likes": 17,
       "shares": 7,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "winter came"
     },
     {
@@ -2407,7 +2408,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 25,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen50.png",
       "imageHint": "broken mirror"
     },
     {
@@ -2416,7 +2417,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 30,
       "shares": 12,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen42.png",
       "imageHint": "bitter wine"
     },
     {
@@ -2425,7 +2426,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 28,
       "shares": 11,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen2.png",
       "imageHint": "empty house"
     },
     {
@@ -2434,7 +2435,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 22,
       "shares": 8,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen89.png",
       "imageHint": "paper promises"
     },
     {
@@ -2443,7 +2444,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 35,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "last message"
     },
     {
@@ -2452,7 +2453,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 40,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen50.png",
       "imageHint": "heart construction"
     },
     {
@@ -2461,7 +2462,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 38,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "cold bed"
     },
     {
@@ -2470,7 +2471,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 32,
       "shares": 13,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen13.png",
       "imageHint": "distant echo"
     },
     {
@@ -2479,7 +2480,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 45,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen42.png",
       "imageHint": "learning alone"
     },
     {
@@ -2488,7 +2489,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 42,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "we were"
     }
   ],
@@ -2499,7 +2500,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-28T10:00:00.000Z",
       "likes": 50,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen29.png",
       "imageHint": "wisdom smile"
     },
     {
@@ -2508,7 +2509,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-27T10:00:00.000Z",
       "likes": 48,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen70.png",
       "imageHint": "divine gift"
     },
     {
@@ -2517,7 +2518,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-26T10:00:00.000Z",
       "likes": 55,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen10.png",
       "imageHint": "brave heart"
     },
     {
@@ -2526,7 +2527,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-25T10:00:00.000Z",
       "likes": 52,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen92.png",
       "imageHint": "ocean eyes"
     },
     {
@@ -2535,7 +2536,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-24T10:00:00.000Z",
       "likes": 60,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen14.png",
       "imageHint": "pure elegance"
     },
     {
@@ -2544,7 +2545,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-23T10:00:00.000Z",
       "likes": 49,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen63.png",
       "imageHint": "firm mountain"
     },
     {
@@ -2553,7 +2554,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-22T10:00:00.000Z",
       "likes": 58,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "art music"
     },
     {
@@ -2562,7 +2563,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-21T10:00:00.000Z",
       "likes": 51,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen15.png",
       "imageHint": "precious portrait"
     },
     {
@@ -2571,7 +2572,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-20T10:00:00.000Z",
       "likes": 56,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "sun moon"
     },
     {
@@ -2580,7 +2581,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-19T10:00:00.000Z",
       "likes": 53,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen58.png",
       "imageHint": "calm storm"
     },
     {
@@ -2589,7 +2590,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-18T10:00:00.000Z",
       "likes": 45,
       "shares": 14,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen23.png",
       "imageHint": "star light"
     },
     {
@@ -2598,7 +2599,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-17T10:00:00.000Z",
       "likes": 47,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "wise judgment"
     },
     {
@@ -2607,7 +2608,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-16T10:00:00.000Z",
       "likes": 54,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "divine flower"
     },
     {
@@ -2616,7 +2617,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-15T10:00:00.000Z",
       "likes": 50,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen7.png",
       "imageHint": "brave king"
     },
     {
@@ -2625,7 +2626,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-14T10:00:00.000Z",
       "likes": 49,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen79.png",
       "imageHint": "sweet song"
     },
     {
@@ -2634,7 +2635,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-13T10:00:00.000Z",
       "likes": 46,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen75.png",
       "imageHint": "new home"
     },
     {
@@ -2643,7 +2644,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-12T10:00:00.000Z",
       "likes": 51,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen69.png",
       "imageHint": "humble peace"
     },
     {
@@ -2652,7 +2653,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-11T10:00:00.000Z",
       "likes": 48,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen57.png",
       "imageHint": "strong man"
     },
     {
@@ -2661,7 +2662,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-10T10:00:00.000Z",
       "likes": 53,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen93.png",
       "imageHint": "warrior spirit"
     },
     {
@@ -2670,7 +2671,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-09T10:00:00.000Z",
       "likes": 49,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen9.png",
       "imageHint": "adventurous journey"
     },
     {
@@ -2679,7 +2680,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:00:00.000Z",
         "likes": 45,
         "shares": 15,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen15.png",
         "imageHint": "sea star"
     },
     {
@@ -2688,7 +2689,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:05:00.000Z",
         "likes": 48,
         "shares": 17,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen107.png",
         "imageHint": "brave lion"
     },
     {
@@ -2697,7 +2698,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:10:00.000Z",
         "likes": 52,
         "shares": 20,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen86.png",
         "imageHint": "sweet smile"
     },
     {
@@ -2706,7 +2707,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:15:00.000Z",
         "likes": 46,
         "shares": 16,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen100.png",
         "imageHint": "brave king"
     },
     {
@@ -2715,7 +2716,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:20:00.000Z",
         "likes": 55,
         "shares": 22,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen15.png",
         "imageHint": "sweet song"
     },
     {
@@ -2724,7 +2725,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:25:00.000Z",
         "likes": 47,
         "shares": 18,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen98.png",
         "imageHint": "loyal friend"
     },
     {
@@ -2733,7 +2734,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:30:00.000Z",
         "likes": 51,
         "shares": 19,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen3.png",
         "imageHint": "dark sea"
     },
     {
@@ -2742,7 +2743,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:35:00.000Z",
         "likes": 49,
         "shares": 15,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen42.png",
         "imageHint": "great strength"
     },
     {
@@ -2751,7 +2752,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:40:00.000Z",
         "likes": 53,
         "shares": 21,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen29.png",
         "imageHint": "warrior spirit"
     },
     {
@@ -2760,7 +2761,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:45:00.000Z",
         "likes": 48,
         "shares": 14,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen89.png",
         "imageHint": "beautiful flower"
     },
     {
@@ -2769,7 +2770,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:50:00.000Z",
         "likes": 54,
         "shares": 23,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen54.png",
         "imageHint": "noble woman"
     },
     {
@@ -2778,7 +2779,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T10:55:00.000Z",
         "likes": 47,
         "shares": 16,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen82.png",
         "imageHint": "golden heart"
     },
     {
@@ -2787,7 +2788,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:00:00.000Z",
         "likes": 50,
         "shares": 18,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen96.png",
         "imageHint": "shining light"
     },
     {
@@ -2796,7 +2797,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:05:00.000Z",
         "likes": 52,
         "shares": 20,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen25.png",
         "imageHint": "archangel strength"
     },
     {
@@ -2805,7 +2806,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:10:00.000Z",
         "likes": 55,
         "shares": 24,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen14.png",
         "imageHint": "great heart"
     },
     {
@@ -2814,7 +2815,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:15:00.000Z",
         "likes": 49,
         "shares": 17,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen39.png",
         "imageHint": "free man"
     },
     {
@@ -2823,7 +2824,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:20:00.000Z",
         "likes": 51,
         "shares": 19,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen31.png",
         "imageHint": "free spirit"
     },
     {
@@ -2832,7 +2833,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:25:00.000Z",
         "likes": 50,
         "shares": 18,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen46.png",
         "imageHint": "illustrious warrior"
     },
     {
@@ -2841,7 +2842,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:30:00.000Z",
         "likes": 56,
         "shares": 25,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen38.png",
         "imageHint": "christmas birth"
     },
     {
@@ -2850,7 +2851,7 @@ const rawPoemsData: PoemsByCategory = {
         "createdAt": "2024-08-01T11:35:00.000Z",
         "likes": 48,
         "shares": 16,
-        "image": "https://placehold.co/600x400.png",
+        "image": "/imagenes-poemas/imagen43.png",
         "imageHint": "shining fame"
     },
     {
@@ -2859,7 +2860,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:00:00.000Z",
       "likes": 58,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen28.png",
       "imageHint": "sweet victory"
     },
     {
@@ -2868,7 +2869,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:05:00.000Z",
       "likes": 50,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "quiet strength"
     },
     {
@@ -2877,7 +2878,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:10:00.000Z",
       "likes": 55,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen56.png",
       "imageHint": "shining torch"
     },
     {
@@ -2886,7 +2887,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:15:00.000Z",
       "likes": 48,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen63.png",
       "imageHint": "wise man"
     },
     {
@@ -2895,7 +2896,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:20:00.000Z",
       "likes": 60,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen32.png",
       "imageHint": "sweet grace"
     },
     {
@@ -2904,7 +2905,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:25:00.000Z",
       "likes": 49,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "golden dream"
     },
     {
@@ -2913,7 +2914,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:30:00.000Z",
       "likes": 53,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen20.png",
       "imageHint": "sweet honey"
     },
     {
@@ -2922,7 +2923,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:35:00.000Z",
       "likes": 51,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen81.png",
       "imageHint": "guardian hero"
     },
     {
@@ -2931,7 +2932,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:40:00.000Z",
       "likes": 56,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen39.png",
       "imageHint": "my lady"
     },
     {
@@ -2940,7 +2941,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:45:00.000Z",
       "likes": 52,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen13.png",
       "imageHint": "humble treasure"
     },
     {
@@ -2949,7 +2950,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:50:00.000Z",
       "likes": 59,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen8.png",
       "imageHint": "beautiful princess"
     },
     {
@@ -2958,7 +2959,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T10:55:00.000Z",
       "likes": 47,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen12.png",
       "imageHint": "my heart"
     },
     {
@@ -2967,7 +2968,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:00:00.000Z",
       "likes": 57,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen12.png",
       "imageHint": "fine wine"
     },
     {
@@ -2976,7 +2977,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:05:00.000Z",
       "likes": 50,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen100.png",
       "imageHint": "sea anchor"
     },
     {
@@ -2985,7 +2986,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:10:00.000Z",
       "likes": 54,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen35.png",
       "imageHint": "white dawn"
     },
     {
@@ -2994,7 +2995,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:15:00.000Z",
       "likes": 48,
       "shares": 16,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen67.png",
       "imageHint": "divine spear"
     },
     {
@@ -3003,7 +3004,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:20:00.000Z",
       "likes": 52,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen15.png",
       "imageHint": "beautiful peace"
     },
     {
@@ -3012,7 +3013,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:25:00.000Z",
       "likes": 51,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen52.png",
       "imageHint": "great mind"
     },
     {
@@ -3021,7 +3022,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:30:00.000Z",
       "likes": 56,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "celestial song"
     },
     {
@@ -3030,7 +3031,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-08-02T11:35:00.000Z",
       "likes": 53,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen90.png",
       "imageHint": "great warrior"
     },
     {
@@ -3039,7 +3040,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 55,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen44.png",
       "imageHint": "sweet pain"
     },
     {
@@ -3048,7 +3049,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 50,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen39.png",
       "imageHint": "calm sea"
     },
     {
@@ -3057,7 +3058,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 58,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen89.png",
       "imageHint": "bright lighthouse"
     },
     {
@@ -3066,7 +3067,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 52,
       "shares": 19,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen54.png",
       "imageHint": "strong wall"
     },
     {
@@ -3075,7 +3076,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 60,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen80.png",
       "imageHint": "desired peace"
     },
     {
@@ -3084,7 +3085,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 54,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen80.png",
       "imageHint": "prince love"
     },
     {
@@ -3093,7 +3094,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 59,
       "shares": 24,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen58.png",
       "imageHint": "gods garden"
     },
     {
@@ -3102,7 +3103,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 51,
       "shares": 17,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen64.png",
       "imageHint": "love war"
     },
     {
@@ -3111,7 +3112,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 56,
       "shares": 21,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen96.png",
       "imageHint": "pure love"
     },
     {
@@ -3120,7 +3121,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 57,
       "shares": 23,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen98.png",
       "imageHint": "little lion"
     }
   ],
@@ -3131,7 +3132,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 25,
       "shares": 10,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen56.png",
       "imageHint": "broken relationship"
     },
     {
@@ -3140,7 +3141,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": "2024-07-29T10:00:00.000Z",
       "likes": 30,
       "shares": 15,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen106.png",
       "imageHint": "house of cards"
     },
     {
@@ -3149,7 +3150,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 40,
       "shares": 20,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen42.png",
       "imageHint": "phone notification"
     },
     {
@@ -3158,7 +3159,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 45,
       "shares": 25,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen40.png",
       "imageHint": "gas receipt"
     },
     {
@@ -3167,7 +3168,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 38,
       "shares": 18,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen54.png",
       "imageHint": "music playlist"
     },
     {
@@ -3176,7 +3177,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 42,
       "shares": 22,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen6.png",
       "imageHint": "friend secret"
     },
     {
@@ -3185,7 +3186,7 @@ const rawPoemsData: PoemsByCategory = {
       "createdAt": new Date().toISOString(),
       "likes": 50,
       "shares": 30,
-      "image": "https://placehold.co/600x400.png",
+      "image": "/imagenes-poemas/imagen33.png",
       "imageHint": "lipstick stain"
     }
   ],

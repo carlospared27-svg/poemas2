@@ -14,7 +14,7 @@ import { Loader2, Send } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { addAdminPoem } from "@/lib/actions"; // Usaremos una nueva Server Action
+import { addAdminPoem } from "@/lib/actions";
 
 type Category = {
     id: string;
@@ -22,19 +22,18 @@ type Category = {
 };
 
 export default function AdminAddPoemPage() {
-    const { isAdmin, user } = useAuth();
+    const { isAdmin, user, loading } = useAuth(); // Añadimos 'loading' del hook de autenticación
     const router = useRouter();
     const { toast } = useToast();
 
     const [title, setTitle] = React.useState("");
-    const [author, setAuthor] = React.useState("Poemas & Versos"); // Admin default
+    const [author, setAuthor] = React.useState("Poemas & Versos");
     const [poemContent, setPoemContent] = React.useState("");
     const [categories, setCategories] = React.useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = React.useState("");
     const [imageFile, setImageFile] = React.useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    // Cargar categorías de poemas
     React.useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -52,6 +51,17 @@ export default function AdminAddPoemPage() {
         };
         fetchCategories();
     }, []);
+
+    // --- SECCIÓN CORREGIDA ---
+    // Movemos la lógica de redirección aquí.
+    // Este hook se ejecutará solo en el navegador después de que el estado de autenticación se haya cargado.
+    React.useEffect(() => {
+        // Si la autenticación ha terminado de cargar y el usuario no es admin, redirigimos.
+        if (!loading && !isAdmin) {
+            router.push('/');
+        }
+    }, [isAdmin, loading, router]);
+
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -80,9 +90,16 @@ export default function AdminAddPoemPage() {
         }
     };
 
-    if (!isAdmin) {
-        router.push('/');
-        return null;
+    // Mientras se verifica el estado de autenticación, mostramos un loader.
+    // Esto también previene que se intente renderizar el formulario antes de tiempo.
+    if (loading || !isAdmin) {
+        return (
+            <MainLayout>
+                <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+            </MainLayout>
+        );
     }
 
     return (

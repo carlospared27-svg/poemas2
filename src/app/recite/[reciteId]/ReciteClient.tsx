@@ -1,3 +1,4 @@
+// src/app/recite/[reciteId]/ReciteClient.tsx
 "use client";
 
 import * as React from "react";
@@ -12,65 +13,43 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { useReactMediaRecorder } from "react-media-recorder";
 
-// --- Componente para visualizar el audio en tiempo real ---
-const AudioVisualizer = ({ audioStream }: { audioStream: MediaStream | null }) => {
-    const canvasRef = React.useRef<HTMLCanvasElement>(null);
-    const animationFrameRef = React.useRef<number>();
+// Hook wrapper para cargar react-media-recorder solo en el cliente
+function useLazyMediaRecorder(options: any) {
+  const [RecorderHook, setRecorderHook] = React.useState<((options: any) => any) | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-    React.useEffect(() => {
-        if (!audioStream || !canvasRef.current || audioStream.getAudioTracks().length === 0) {
-            return;
-        }
+  React.useEffect(() => {
+    let isMounted = true;
 
-        const audioContext = new AudioContext();
-        const analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaStreamSource(audioStream);
-        source.connect(analyser);
+    import('react-media-recorder').then((module) => {
+      if (isMounted) {
+        setRecorderHook(() => module.useReactMediaRecorder);
+        setIsLoading(false);
+      }
+    }).catch((error) => {
+      console.error("Error loading react-media-recorder:", error);
+      setIsLoading(false);
+    });
 
-        analyser.fftSize = 256;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        const canvas = canvasRef.current;
-        const canvasCtx = canvas.getContext('2d');
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-        const draw = () => {
-            if (!canvasCtx) return;
-            animationFrameRef.current = requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
-            
-            canvasCtx.fillStyle = 'rgba(17, 24, 39, 0.5)'; // Match background
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+  if (isLoading || !RecorderHook) {
+    return {
+      status: 'idle',
+      startRecording: () => {},
+      stopRecording: () => {},
+      mediaBlobUrl: null,
+      clearBlobUrl: () => {},
+      previewStream: null,
+    };
+  }
 
-            const barWidth = (canvas.width / bufferLength) * 2.5;
-            let barHeight;
-            let x = 0;
-
-            for (let i = 0; i < bufferLength; i++) {
-                barHeight = dataArray[i] / 2;
-                const r = barHeight + 100 * (i/bufferLength);
-                const g = 250 * (i/bufferLength);
-                const b = 50;
-                canvasCtx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-                canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight);
-                x += barWidth + 1;
-            }
-        };
-
-        draw();
-
-        return () => {
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-            audioContext.close();
-        };
-    }, [audioStream]);
-
-    return <canvas ref={canvasRef} className="w-full h-24 rounded-lg" />;
-};
-
+  return RecorderHook(options);
+}
 
 type RecitedPoem = {
   id: string;
@@ -95,7 +74,7 @@ export function ReciteClient({ poem }: { poem: Poem }) {
   const [playbackRate, setPlaybackRate] = React.useState(1);
   const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
 
-  const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl, previewStream } = useReactMediaRecorder({ audio: true, blobPropertyBag: { type: 'audio/mp3' } });
+  const { status, startRecording, stopRecording, mediaBlobUrl, clearBlobUrl, previewStream } = useLazyMediaRecorder({ audio: true, blobPropertyBag: { type: 'audio/mp3' } });
   const [showSaveModal, setShowSaveModal] = React.useState(false);
   const [recitalName, setRecitalName] = React.useState(poem.title);
 
@@ -216,19 +195,23 @@ export function ReciteClient({ poem }: { poem: Poem }) {
 
         <Card className="bg-black/30 border-white/20 text-white">
             <CardContent className="p-4 space-y-4">
-                 <Label className="flex items-center gap-2"><Mic className="h-4 w-4"/> Tu Recitado</Label>
-                 {status === 'recording' && <AudioVisualizer audioStream={previewStream} />}
-                 {status === 'stopped' && mediaBlobUrl && (
-                    <div className="flex justify-center">
-                        <audio src={mediaBlobUrl} controls className="w-full" />
-                    </div>
-                 )}
-                 <div className="flex items-center justify-center space-x-4">
-                    {status !== 'recording' && <Button variant="secondary" onClick={handleStartRecording}><Mic className="mr-2 h-4 w-4"/>Grabar</Button>}
-                    {status === 'recording' && <Button variant="destructive" onClick={handleStopRecording}><Square className="mr-2 h-4 w-4"/>Detener</Button>}
-                    <Button variant="outline" onClick={handleRestartRecording}>Reiniciar</Button>
-                    <Button onClick={() => setShowSaveModal(true)} disabled={!mediaBlobUrl}>Guardar</Button>
-                 </div>
+                <Label className="flex items-center gap-2"><Mic className="h-4 w-4"/> Tu Recitado</Label>
+                {status === 'recording' && (
+                  <div className="text-center text-yellow-300 mb-4">
+                    <Mic className="h-8 w-8 animate-pulse" /> Grabando...
+                  </div>
+                )}
+                {status === 'stopped' && mediaBlobUrl && (
+                  <div className="flex justify-center">
+                    <audio src={mediaBlobUrl} controls className="w-full" />
+                  </div>
+                )}
+                <div className="flex items-center justify-center space-x-4">
+                  {status !== 'recording' && <Button variant="secondary" onClick={handleStartRecording}><Mic className="mr-2 h-4 w-4"/>Grabar</Button>}
+                  {status === 'recording' && <Button variant="destructive" onClick={handleStopRecording}><Square className="mr-2 h-4 w-4"/>Detener</Button>}
+                  <Button variant="outline" onClick={handleRestartRecording}>Reiniciar</Button>
+                  <Button onClick={() => setShowSaveModal(true)} disabled={!mediaBlobUrl}>Guardar</Button>
+                </div>
             </CardContent>
         </Card>
         <Button variant="link" className="text-gray-400 mx-auto block" onClick={() => router.back()}>Salir</Button>

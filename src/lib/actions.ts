@@ -12,7 +12,8 @@ import {
     getAllPoems,
     getImagesForCategory,
     getImageById,
-    getMultimediaForCategory // <- 1. AÑADIDA A LA LISTA DE IMPORTACIÓN
+    getMultimediaForCategory, // <- 1. AÑADIDA A LA LISTA DE IMPORTACIÓN
+    getRandomPoemsForCategory // <-- AÑADIDO: Importamos la nueva función
 } from './poems-service';
 
 export { 
@@ -25,5 +26,6 @@ export {
     getAllPoems,
     getImagesForCategory,
     getImageById,
-    getMultimediaForCategory // <- 2. AÑADIDA A LA LISTA DE EXPORTACIÓN
+    getMultimediaForCategory, // <- 2. AÑADIDA A LA LISTA DE EXPORTACIÓN
+    getRandomPoemsForCategory
 };

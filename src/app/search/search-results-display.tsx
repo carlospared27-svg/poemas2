@@ -1,7 +1,8 @@
-// Ruta: src/app/search/search-results.tsx
+// Ruta: src/app/search/search-results-display.tsx
 "use client";
 
 import * as React from "react";
+import { useState } from "react"; 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Poem } from "@/lib/poems-data";
@@ -13,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/components/auth-provider";
-import { deletePoem } from "@/lib/poems-service";
+import { deletePoem as deletePoemFromServer } from "@/lib/poems-service";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,14 +24,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type SearchResultsProps = {
-  initialPoems: (Poem & { category: string })[];
-  searchQuery: string;
-};
+import { useInstantSearch } from "react-instantsearch";
 
 type AudioState = {
   isPlaying: boolean;
@@ -40,21 +36,18 @@ type AudioState = {
 
 const PEXELS_CACHE_KEY = 'amor-expressions-pexels-cache-v4';
 
-export function SearchResults({ initialPoems, searchQuery }: SearchResultsProps) {
+export function SearchResultsDisplay({ poems, searchQuery }: { poems: (Poem & { category: string })[], searchQuery: string }) {
   const router = useRouter();
   const { toast } = useToast();
   const { isAdmin } = useAuth();
-  const [searchResults, setSearchResults] = React.useState(initialPoems);
+  const { refresh } = useInstantSearch();
 
+  const [poemToDelete, setPoemToDelete] = useState<(Poem & { category: string }) | null>(null);
   const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null);
   const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false, poemIndex: null });
   const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
   const fileInputRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
 
-  React.useEffect(() => {
-    setSearchResults(initialPoems);
-  }, [initialPoems]);
-  
   React.useEffect(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       setSpeechSynthesis(window.speechSynthesis);
@@ -63,11 +56,13 @@ export function SearchResults({ initialPoems, searchQuery }: SearchResultsProps)
 
   const handleDeletePoem = async (poemId: string) => {
     try {
-        await deletePoem(poemId);
-        toast({ title: "Poema eliminado", description: "El poema ha sido eliminado." });
-        setSearchResults(prev => prev.filter(p => p.id !== poemId));
+        await deletePoemFromServer(poemId);
+        toast({ title: "Poema eliminado", description: "El poema ha sido eliminado con éxito." });
+        refresh();
     } catch (error) {
         toast({ variant: "destructive", title: "Error al eliminar", description: "No se pudo eliminar el poema." });
+    } finally {
+        setPoemToDelete(null);
     }
   };
   
@@ -186,8 +181,7 @@ export function SearchResults({ initialPoems, searchQuery }: SearchResultsProps)
         const imageCache: Record<string, Partial<Poem>> = storedImageCache ? JSON.parse(storedImageCache) : {};
         imageCache[poemId] = { ...imageCache[poemId], ...newPoemData };
         localStorage.setItem(PEXELS_CACHE_KEY, JSON.stringify(imageCache));
-        setSearchResults(prev => prev.map(p => p.id === poemId ? { ...p, ...newPoemData } : p));
-        toast({ title: "¡Éxito!", description: "La imagen del poema ha sido actualizada." });
+        toast({ title: "Previsualización", description: "La imagen del poema se ha actualizado localmente." });
     };
     reader.onerror = (error) => {
         console.error("Error reading file:", error);
@@ -203,66 +197,97 @@ export function SearchResults({ initialPoems, searchQuery }: SearchResultsProps)
 
   return (
     <>
-      {searchQuery && searchResults.length > 0 ? (
-        <>
-          <h2 className="text-2xl font-headline text-foreground mb-4">Resultados para: "{searchQuery}"</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {searchResults.map((poem, index) => (
-              <Card key={poem.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 group flex flex-col">
-                 <div className="relative aspect-[4/3] w-full overflow-hidden cursor-pointer" onClick={() => handleOpenPoem(poem.id, poem.category)}>
-                    {poem.imageUrl ? (
-                        <Image src={poem.imageUrl} alt={poem.title} fill className="object-cover group-hover:scale-110 transition-transform duration-300"/>
-                    ) : <Skeleton className="h-full w-full" />}
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        <Maximize className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {poems.map((poem, index) => (
+          <Card key={poem.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 group flex flex-col">
+              <div className="relative aspect-[4/3] w-full overflow-hidden cursor-pointer" onClick={() => handleOpenPoem(poem.id, poem.category)}>
+                {/* --- SECCIÓN CORREGIDA --- */}
+                {(poem.imageUrl || poem.image) ? (
+                    <Image 
+                        src={poem.imageUrl || poem.image} 
+                        alt={poem.title} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                ) : <Skeleton className="h-full w-full" />}
+                {/* --- FIN DE LA SECCIÓN CORREGIDA --- */}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <Maximize className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                {isAdmin && (
+                  <Button 
+                    variant="destructive" 
+                    size="icon" 
+                    className="absolute top-2 left-2 opacity-80 hover:opacity-100" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPoemToDelete(poem);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4"/>
+                  </Button>
+                )}
+              </div>
+              <CardContent className="p-4 bg-background flex flex-col flex-1">
+                <h2 className="text-xl font-headline font-bold text-primary mb-2 truncate">{getEmojiForTitle(poem.title)} {poem.title}</h2>
+                <div className="h-24" onDoubleClick={() => handleOpenPoem(poem.id, poem.category)}>
+                    <ScrollArea className="h-full"><p className="text-foreground/80 whitespace-pre-line font-body italic text-base pr-4">{poem.poem}</p></ScrollArea>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-border mt-4">
+                    <div className="flex items-center">
+                        <Button variant="ghost" size="icon" onClick={() => handleCopy(`${poem.title}\n\n${poem.poem}`)} title="Copiar poema"><Copy className="w-5 h-5" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleShare(poem)} className="ml-1" title="Compartir tarjeta"><Share2 className="w-5 h-5" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handlePlayAudio(`${poem.title}. ${poem.poem}`, index)} className="ml-1" disabled={audioState.isLoading && audioState.poemIndex === index} title="Reproducir poema">
+                        {audioState.isLoading && audioState.poemIndex === index ? <Loader className="w-5 h-5 animate-spin" /> : audioState.isPlaying && audioState.poemIndex === index ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleRecite(poem.id)} className="ml-1" title="Recitar y Grabar"><Mic className="w-5 h-5" /></Button>
+                        <input type="file" ref={el => { if(el) fileInputRefs.current[poem.id] = el; }} onChange={(e) => handleFileChange(e, poem.id)} className="hidden" accept="image/*"/>
+                        <Button variant="ghost" size="icon" className="ml-1" onClick={() => handleImageChangeClick(poem.id)} title="Cambiar imagen"><ImageIcon className="w-5 h-5" /></Button>
                     </div>
-                    {isAdmin && (
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="icon" className="absolute top-2 left-2 opacity-80 hover:opacity-100" onClick={e => e.stopPropagation()}>
-                                    <Trash2 className="w-4 h-4"/>
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                                <AlertDialogDescription>Esta acción es permanente. ¿Realmente quieres eliminar este poema?</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeletePoem(poem.id)} className="bg-destructive hover:bg-destructive/90">Eliminar</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    )}
-                 </div>
-                 <CardContent className="p-4 bg-background flex flex-col flex-1">
-                    <h2 className="text-xl font-headline font-bold text-primary mb-2 truncate">{getEmojiForTitle(poem.title)} {poem.title}</h2>
-                    <div className="h-24" onDoubleClick={() => handleOpenPoem(poem.id, poem.category)}>
-                        <ScrollArea className="h-full"><p className="text-foreground/80 whitespace-pre-line font-body italic text-base pr-4">{poem.poem}</p></ScrollArea>
-                    </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-border mt-4">
-                        <div className="flex items-center">
-                           <Button variant="ghost" size="icon" onClick={() => handleCopy(`${poem.title}\n\n${poem.poem}`)} title="Copiar poema"><Copy className="w-5 h-5" /></Button>
-                           <Button variant="ghost" size="icon" onClick={() => handleShare(poem)} className="ml-1" title="Compartir tarjeta"><Share2 className="w-5 h-5" /></Button>
-                           <Button variant="ghost" size="icon" onClick={() => handlePlayAudio(`${poem.title}. ${poem.poem}`, index)} className="ml-1" disabled={audioState.isLoading && audioState.poemIndex === index} title="Reproducir poema">
-                            {audioState.isLoading && audioState.poemIndex === index ? <Loader className="w-5 h-5 animate-spin" /> : audioState.isPlaying && audioState.poemIndex === index ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                           </Button>
-                           <Button variant="ghost" size="icon" onClick={() => handleRecite(poem.id)} className="ml-1" title="Recitar y Grabar"><Mic className="w-5 h-5" /></Button>
-                           <input type="file" ref={el => { if(el) fileInputRefs.current[poem.id] = el; }} onChange={(e) => handleFileChange(e, poem.id)} className="hidden" accept="image/*"/>
-                           <Button variant="ghost" size="icon" className="ml-1" onClick={() => handleImageChangeClick(poem.id)} title="Cambiar imagen"><ImageIcon className="w-5 h-5" /></Button>
-                        </div>
-                        <Button variant="ghost" size="icon" title="Añadir a favoritos (Próximamente)"><Heart className="w-6 h-6 text-muted-foreground" /></Button>
-                    </div>
-                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        </>
-      ) : searchQuery ? (
-          <div className="text-center py-20"><p className="text-xl text-muted-foreground">No se encontraron poemas para "{searchQuery}".</p><Button onClick={() => router.push('/')} className="mt-4">Volver al inicio</Button></div>
-      ) : (
-        <div className="text-center py-20"><p className="text-xl text-muted-foreground">Escribe algo en la barra de búsqueda para empezar.</p></div>
+                    <Button variant="ghost" size="icon" title="Añadir a favoritos (Próximamente)"><Heart className="w-6 h-6 text-muted-foreground" /></Button>
+                </div>
+              </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <AlertDialog
+        open={!!poemToDelete}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            setPoemToDelete(null);
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción es permanente. Se eliminará el poema titulado "{poemToDelete?.title}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => handleDeletePoem(poemToDelete!.id)} 
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      {searchQuery && poems.length === 0 && (
+        <div className="text-center py-20 col-span-full">
+          <p className="text-xl text-muted-foreground">No se encontraron poemas para "{searchQuery}".</p>
+          <Button onClick={() => router.push('/')} className="mt-4">Volver al inicio</Button>
+        </div>
+      )}
+      {!searchQuery && poems.length === 0 && (
+         <div className="text-center py-20 col-span-full">
+          <p className="text-xl text-muted-foreground">Escribe algo en la barra de búsqueda para empezar.</p>
+        </div>
       )}
     </>
   );

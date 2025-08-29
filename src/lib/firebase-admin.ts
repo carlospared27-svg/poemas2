@@ -1,7 +1,8 @@
 // src/lib/firebase-admin.ts
 import admin from 'firebase-admin';
 import { getApps } from 'firebase-admin/app';
-
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 
 // Log para verificar si la variable de entorno está cargada

@@ -124,7 +124,6 @@ export function MainApp() {
       setSpeechSynthesis(window.speechSynthesis);
     }
     
-    // --- LÓGICA CORREGIDA PARA CARGAR EL POEMA SUGERIDO ---
     const loadDailyPoem = async () => {
         try {
             const poemsCollection = collection(db, 'poems');
@@ -146,7 +145,6 @@ export function MainApp() {
             }
             
             const randomPoemData = poems[Math.floor(Math.random() * poems.length)];
-            // Simplemente usamos los datos del poema como vienen, incluyendo la imageUrl
             const poem = { ...randomPoemData, createdAt: convertTimestampToString(randomPoemData.createdAt) } as Poem;
             setDailyPoem(poem);
             
@@ -549,8 +547,9 @@ export function MainApp() {
                   <h2 className="text-3xl font-headline mb-4 text-primary/90">Poema Sugerido</h2>
                     <Card className="bg-accent/20 border-accent shadow-lg hover:shadow-xl transition-shadow flex flex-col overflow-hidden">
                        <div className="relative aspect-[4/3] w-full">
-                          {dailyPoem.imageUrl ? (
-                            <Image src={dailyPoem.imageUrl} alt={dailyPoem.title} fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover"/>
+                          {/* --- LÍNEA CORREGIDA --- */}
+                          {(dailyPoem.imageUrl || dailyPoem.image) ? (
+                            <Image src={dailyPoem.imageUrl || dailyPoem.image} alt={dailyPoem.title} fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover"/>
                           ): <Skeleton className="h-full w-full" />}
                           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center cursor-pointer" onClick={() => router.push(`/poem/${dailyPoem.id}`)}>
                               <Maximize className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity" />

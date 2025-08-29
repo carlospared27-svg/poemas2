@@ -1,3 +1,4 @@
+// Ruta: src/app/category/[slug]/CategoryClient.tsx
 "use client";
 
 import * as React from "react";
@@ -12,7 +13,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs, doc, deleteDoc, updateDoc, increment, limit, startAfter, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
 import { Poem } from "@/lib/poems-data";
-import { Loader2, Trash2, Heart, Upload, Image as ImageIcon, Copy, Share2, Play, Pause, Mic, Pencil } from "lucide-react";
+import { Loader2, Trash2, Heart, Upload, Image as ImageIcon, Copy, Share2, Play, Pause, Mic, Pencil, Dices } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteImageFromStorage, uploadImage } from "@/lib/storage-service";
 import { ImageGalleryModal } from "@/components/admin/image-gallery-modal";
-import { updatePoemImage } from "@/lib/actions";
+import { updatePoemImage, getRandomPoemsForCategory } from "@/lib/actions";
 import { PoemModal } from "@/components/poem-modal";
 
 const LOCAL_IMAGES_KEY = 'amor-expressions-local-images-v1';
@@ -46,10 +47,10 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
     const { isAdmin } = useAuth();
 
     const [poems, setPoems] = React.useState<Poem[]>(initialPoems);
-    const [loading, setLoading] = React.useState(false);
     const [lastPoemDoc, setLastPoemDoc] = React.useState<QueryDocumentSnapshot<DocumentData> | null>(null);
     const [hasMore, setHasMore] = React.useState(initialPoems.length === POEMS_PER_PAGE);
     const [loadingMore, setLoadingMore] = React.useState(false);
+    const [loadingRandom, setLoadingRandom] = React.useState(false); // Nuevo estado para el botón aleatorio
     
     const [selectedPoem, setSelectedPoem] = React.useState<Poem | null>(null);
     const [poemToEdit, setPoemToEdit] = React.useState<Poem | null>(null);
@@ -83,34 +84,28 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
     }, []);
 
     const handleLoadMore = async () => {
-        if (!lastPoemDoc && poems.length > 0) {
-            // Si lastPoemDoc no está seteado, lo seteamos con el último poema actual
-            const poemsCollection = collection(db, 'poems');
-            const q = query(poemsCollection, where('category', '==', categoryName), orderBy('createdAt', 'desc'), limit(poems.length));
-            const querySnapshot = await getDocs(q);
-            const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-            setLastPoemDoc(lastVisible);
-        }
-
-        if (!lastPoemDoc) return;
-
         setLoadingMore(true);
         try {
             const poemsCollection = collection(db, 'poems');
-            const q = query(
-                poemsCollection,
-                where('category', '==', categoryName),
-                orderBy('createdAt', 'desc'),
-                startAfter(lastPoemDoc),
-                limit(POEMS_PER_PAGE)
-            );
+            let lastVisible = lastPoemDoc;
+
+            if (!lastVisible && poems.length > 0) {
+                const initialQuery = query(poemsCollection, where('category', '==', categoryName), orderBy('createdAt', 'desc'), limit(poems.length));
+                const initialSnapshot = await getDocs(initialQuery);
+                lastVisible = initialSnapshot.docs[initialSnapshot.docs.length - 1];
+            }
+
+            if (!lastVisible) {
+                setHasMore(false);
+                return;
+            }
+
+            const q = query(poemsCollection, where('category', '==', categoryName), orderBy('createdAt', 'desc'), startAfter(lastVisible), limit(POEMS_PER_PAGE));
             const querySnapshot = await getDocs(q);
             const newPoems = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Poem[];
             
             setPoems(prevPoems => [...prevPoems, ...newPoems]);
-
-            const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-            setLastPoemDoc(lastVisible);
+            setLastPoemDoc(querySnapshot.docs[querySnapshot.docs.length - 1] || null);
 
             if (querySnapshot.docs.length < POEMS_PER_PAGE) {
                 setHasMore(false);
@@ -120,6 +115,29 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
             toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar más poemas." });
         } finally {
             setLoadingMore(false);
+        }
+    };
+
+    const handleLoadRandom = async () => {
+        setLoadingRandom(true);
+        try {
+            const currentPoemIds = poems.map(p => p.id);
+            const newRandomPoems = await getRandomPoemsForCategory(categoryName, POEMS_PER_PAGE, currentPoemIds);
+
+            if (newRandomPoems.length === 0) {
+                toast({ title: "No hay más poemas", description: "Has visto todos los poemas de esta categoría." });
+                setHasMore(false);
+            } else {
+                setPoems(prevPoems => [...prevPoems, ...newRandomPoems]);
+                if (newRandomPoems.length < POEMS_PER_PAGE) {
+                    setHasMore(false);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching random poems:", error);
+            toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar poemas aleatorios." });
+        } finally {
+            setLoadingRandom(false);
         }
     };
 
@@ -261,7 +279,7 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
     const handleShare = async (e: React.MouseEvent, title: string, text: string) => { e.stopPropagation(); if (navigator.share) { try { await navigator.share({ title, text }); } catch (error) { console.error(error); } } else { handleCopy(e, `${title}\n\n${text}`); } };
     const handleRecite = (e: React.MouseEvent, poemId: string) => { 
         e.stopPropagation(); 
-        router.push(`/recite/${poemId}`); // ❌ Esto podría estar generando un slug
+        router.push(`/recite/${poemId}`);
     };
 
     const handleEditPoem = (e: React.MouseEvent, poemId: string) => {
@@ -287,11 +305,7 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
 
             <div className="container mx-auto py-8 px-4">
                 <h1 className="text-4xl font-headline text-primary mb-8 text-center">{categoryName}</h1>
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
-                    </div>
-                ) : poems.length > 0 ? (
+                {poems.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {poems.map(poem => (
@@ -299,7 +313,7 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
                                     <CardHeader className="p-0 relative">
                                         <div className="aspect-video w-full relative">
                                             <Image
-                                                src={poem.imageUrl || 'https://placehold.co/600x400/f87171/ffffff?text=Poema'}
+                                                src={poem.imageUrl || poem.image || 'https://placehold.co/600x400/f87171/ffffff?text=Poema'}
                                                 alt={poem.title}
                                                 fill
                                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -312,7 +326,7 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
                                                 <Button size="icon" variant="secondary" onClick={(e) => handleEditPoem(e, poem.id)} title="Editar Poema">
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
-                                                <input type="file" className="hidden" ref={el => { adminFileInputRefs.current[poem.id] = el; }} onChange={(e) => handleAdminImageUpload(e, poem.id)} accept="image/*" />
+                                                <input type="file" className="hidden" ref={el => { if(el) adminFileInputRefs.current[poem.id] = el; }} onChange={(e) => handleAdminImageUpload(e, poem.id)} accept="image/*" />
                                                 <Button size="icon" variant="secondary" onClick={(e) => { e.stopPropagation(); handleOpenImageChoice(poem); }} title="Cambiar imagen (Admin)">
                                                     <ImageIcon className="h-4 w-4" />
                                                 </Button>
@@ -349,7 +363,7 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
                                             <Button variant="ghost" size="icon" onClick={(e) => handleRecite(e, poem.id)} title="Recitar y Grabar"><Mic className="w-4 w-4" /></Button>
                                             <Button variant="ghost" size="icon" onClick={(e) => handleCopy(e, `${poem.title}\n\n${poem.poem}`)} title="Copiar"><Copy className="w-4 w-4" /></Button>
                                             <Button variant="ghost" size="icon" onClick={(e) => handleShare(e, poem.title, poem.poem)} title="Compartir"><Share2 className="w-4 w-4" /></Button>
-                                            <input type="file" className="hidden" ref={el => { userFileInputRefs.current[poem.id] = el; }} onChange={(e) => handleUserImageUpload(e, poem.id)} accept="image/*" />
+                                            <input type="file" className="hidden" ref={el => { if(el) userFileInputRefs.current[poem.id] = el; }} onChange={(e) => handleUserImageUpload(e, poem.id)} accept="image/*" />
                                             <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); userFileInputRefs.current[poem.id]?.click(); }} title="Cambiar Imagen (Local)"><Upload className="w-4 w-4" /></Button>
                                         </div>
                                     </CardFooter>
@@ -358,15 +372,19 @@ export function CategoryClient({ initialPoems }: { initialPoems: Poem[] }) {
                         </div>
                         
                         {hasMore && (
-                            <div className="flex justify-center mt-8">
-                                <Button onClick={handleLoadMore} disabled={loadingMore}>
+                            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+                                <Button onClick={handleLoadMore} disabled={loadingMore || loadingRandom} className="w-full sm:w-auto">
                                     {loadingMore ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Cargando...
-                                        </>
+                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Cargando...</>
                                     ) : (
                                         "Mostrar Más"
+                                    )}
+                                </Button>
+                                <Button onClick={handleLoadRandom} disabled={loadingRandom || loadingMore} variant="outline" className="w-full sm:w-auto">
+                                    {loadingRandom ? (
+                                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Cargando...</>
+                                    ) : (
+                                        <><Dices className="mr-2 h-4 w-4" />Mostrar Aleatorio</>
                                     )}
                                 </Button>
                             </div>

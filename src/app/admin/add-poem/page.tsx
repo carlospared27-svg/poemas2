@@ -22,18 +22,32 @@ type Category = {
 };
 
 export default function AdminAddPoemPage() {
-    const { isAdmin, user, loading } = useAuth(); // Añadimos 'loading' del hook de autenticación
+    const { isAdmin, user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
 
     const [title, setTitle] = React.useState("");
-    const [author, setAuthor] = React.useState("Poemas & Versos");
+    const [author, setAuthor] = React.useState("Poemas & Versos"); // Admin default
     const [poemContent, setPoemContent] = React.useState("");
     const [categories, setCategories] = React.useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = React.useState("");
     const [imageFile, setImageFile] = React.useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
+    // --- CAMBIO CLAVE: Lógica de redirección movida a useEffect ---
+    // Esto asegura que la redirección solo ocurra en el navegador.
+    React.useEffect(() => {
+        if (user && !isAdmin) {
+            toast({
+                title: "Acceso denegado",
+                description: "Debes ser administrador para acceder a esta página.",
+                variant: "destructive"
+            });
+            router.push('/');
+        }
+    }, [isAdmin, user, router, toast]);
+
+    // Cargar categorías de poemas
     React.useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -52,17 +66,6 @@ export default function AdminAddPoemPage() {
         fetchCategories();
     }, []);
 
-    // --- SECCIÓN CORREGIDA ---
-    // Movemos la lógica de redirección aquí.
-    // Este hook se ejecutará solo en el navegador después de que el estado de autenticación se haya cargado.
-    React.useEffect(() => {
-        // Si la autenticación ha terminado de cargar y el usuario no es admin, redirigimos.
-        if (!loading && !isAdmin) {
-            router.push('/');
-        }
-    }, [isAdmin, loading, router]);
-
-
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!title || !poemContent || !selectedCategory) {
@@ -71,14 +74,18 @@ export default function AdminAddPoemPage() {
         }
         
         setIsSubmitting(true);
+        // Creamos un FormData para enviar el archivo correctamente a la Server Action
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('poem', poemContent);
+        formData.append('category', selectedCategory);
+        formData.append('author', author || "Poemas & Versos");
+        if (imageFile) {
+            formData.append('imageFile', imageFile);
+        }
+
         try {
-            await addAdminPoem({
-                title,
-                poem: poemContent,
-                category: selectedCategory,
-                author: author || "Poemas & Versos",
-                imageFile,
-            });
+            await addAdminPoem(formData);
 
             toast({ title: "¡Éxito!", description: "El poema ha sido añadido correctamente." });
             router.push(`/category/${selectedCategory}`);
@@ -89,13 +96,13 @@ export default function AdminAddPoemPage() {
             setIsSubmitting(false);
         }
     };
-
-    // Mientras se verifica el estado de autenticación, mostramos un loader.
-    // Esto también previene que se intente renderizar el formulario antes de tiempo.
-    if (loading || !isAdmin) {
+    
+    // --- CAMBIO CLAVE: Renderizado condicional ---
+    // Muestra un estado de carga o nada si el usuario no es admin, evitando que el formulario se muestre brevemente.
+    if (!isAdmin) {
         return (
             <MainLayout>
-                <div className="flex items-center justify-center h-full">
+                <div className="flex h-[calc(100vh-57px)] items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin" />
                 </div>
             </MainLayout>

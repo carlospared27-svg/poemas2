@@ -29,7 +29,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 
-// ... (El resto de tus tipos y constantes se mantienen igual)
 type Collection = {
   name: string;
   poems: Poem[];
@@ -54,6 +53,9 @@ export default function CollectionsPage() {
     const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null);
     const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false, poemId: null });
     const [publicImages, setPublicImages] = React.useState<string[]>([]);
+    
+    // --- CORRECCIÓN: Estado para almacenar el origen de la URL de forma segura ---
+    const [pageOrigin, setPageOrigin] = React.useState("");
 
     const getPublicImages = React.useCallback(async () => {
         // Simulación de rutas de imágenes públicas
@@ -67,9 +69,14 @@ export default function CollectionsPage() {
         ];
     }, []);
 
+    // --- CORRECCIÓN: Toda la lógica que depende del navegador se queda dentro de useEffect ---
     React.useEffect(() => {
-        if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-          setSpeechSynthesis(window.speechSynthesis);
+        // Asignamos las APIs del navegador a los estados solo cuando el componente se monta en el cliente
+        if (typeof window !== 'undefined') {
+          if ('speechSynthesis' in window) {
+            setSpeechSynthesis(window.speechSynthesis);
+          }
+          setPageOrigin(window.location.origin);
         }
 
         const loadCollections = async () => {
@@ -78,6 +85,7 @@ export default function CollectionsPage() {
             const fetchedPublicImages = await getPublicImages();
             setPublicImages(fetchedPublicImages);
 
+            // localStorage solo se accede aquí, dentro de useEffect
             const storedFavorites = localStorage.getItem(FAVORITES_KEY);
             const favoriteIds: string[] = storedFavorites ? JSON.parse(storedFavorites) : [];
             let favoritePoems: Poem[] = [];
@@ -118,9 +126,7 @@ export default function CollectionsPage() {
         loadCollections();
     }, [toast, getPublicImages]);
     
-    // --- FUNCIÓN getPoemDisplayImage CORREGIDA ---
     const getPoemDisplayImage = React.useCallback((poem: Poem): string => {
-        // Verificamos que 'poem.image' sea una cadena de texto antes de usar 'startsWith'
         if (typeof poem.image === 'string' && poem.image.startsWith(LOCAL_IMAGE_PREFIX)) {
             return poem.image;
         }
@@ -137,7 +143,6 @@ export default function CollectionsPage() {
         return `https://placehold.co/600x400/f87171/ffffff?text=Poema`;
     }, [publicImages]);
 
-    // ... (El resto de tus funciones como handleSelectCollection, handleDeleteFavorite, etc. se mantienen igual)
     const handleSelectCollection = (collectionName: string) => {
         const collection = collections.find(c => c.name === collectionName);
         setSelectedCollection(collection || null);
@@ -220,12 +225,14 @@ export default function CollectionsPage() {
             navigator.share({
                 title: poem.title,
                 text: `${poem.title}\n\n${poem.poem}\n\nPor: ${poem.author || 'Anónimo'}`,
-                url: `${window.location.origin}/poem/${poem.id}`,
+                // --- CORRECCIÓN: Usamos el estado 'pageOrigin' ---
+                url: `${pageOrigin}/poem/${poem.id}`,
             })
             .then(() => toast({ title: "Compartido", description: "El poema ha sido compartido." }))
             .catch((error) => console.error('Error al compartir:', error));
         } else {
-            navigator.clipboard.writeText(`${poem.title}\n\n${poem.poem}\n\nPor: ${poem.author || 'Anónimo'}\n${window.location.origin}/poem/${poem.id}`);
+            // --- CORRECCIÓN: Usamos el estado 'pageOrigin' ---
+            navigator.clipboard.writeText(`${poem.title}\n\n${poem.poem}\n\nPor: ${poem.author || 'Anónimo'}\n${pageOrigin}/poem/${poem.id}`);
             toast({ title: "Enlace Copiado", description: "El enlace y contenido del poema han sido copiados al portapapeles." });
         }
     };
@@ -258,7 +265,6 @@ export default function CollectionsPage() {
     };
 
     return (
-      // ... (El JSX se mantiene igual, pero ahora usará la función getPoemDisplayImage corregida)
       <MainLayout>
           <div className="flex flex-col md:flex-row h-[calc(100vh-57px)]">
             <aside className="w-full md:w-64 lg:w-72 xl:w-80 border-b md:border-r md:border-b-0 p-4">

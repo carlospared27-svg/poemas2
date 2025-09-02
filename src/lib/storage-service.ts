@@ -4,12 +4,12 @@ import { ref, uploadBytes, getDownloadURL, StorageError, deleteObject } from "fi
 import { storage } from "./firebase"; // Import the initialized storage instance
 
 /**
- * Uploads an image file to Firebase Storage.
- * @param file The image file to upload.
+ * Uploads an image file or a Blob to Firebase Storage.
+ * @param file The image file or Blob to upload.
  * @param path The path in Firebase Storage where the file will be stored.
  * @returns The download URL of the uploaded file.
  */
-export const uploadImage = async (file: File, path: string): Promise<string> => {
+export const uploadImage = async (file: File | Blob, path: string): Promise<string> => {
   if (!file) {
     throw new Error("No se proporcionó ningún archivo para subir.");
   }
@@ -91,40 +91,28 @@ export const uploadAudio = async (file: File, path: string): Promise<string> => 
 
 
 /**
- * Deletes an image file from Firebase Storage.
+ * Deletes a file from Firebase Storage using its download URL.
  * @param url The download URL of the file to delete.
  */
-export const deleteImageFromStorage = async (url: string): Promise<void> => {
-    if (!url || !url.includes('firebasestorage')) return;
+export const deleteFileFromStorage = async (url: string): Promise<void> => {
+    if (!url || !url.includes('firebasestorage')) {
+        console.warn(`URL inválida o no es de Firebase Storage: ${url}`);
+        return;
+    }
     try {
         const fileRef = ref(storage, url);
         await deleteObject(fileRef);
     } catch (error) {
         if (error instanceof StorageError && error.code === 'storage/object-not-found') {
-            console.warn(`Image file not found at ${url}, it might have been already deleted.`);
+            console.warn(`Archivo no encontrado en ${url}, puede que ya haya sido eliminado.`);
         } else {
-            console.error(`Error deleting image file from storage: ${url}`, error);
-            throw new Error("Failed to delete image file from storage.");
+            console.error(`Error al eliminar el archivo de Storage: ${url}`, error);
+            throw new Error("No se pudo eliminar el archivo de Storage.");
         }
     }
 };
 
-// --- NUEVA FUNCIÓN AÑADIDA ---
-/**
- * Deletes an audio file from Firebase Storage.
- * @param url The download URL of the file to delete.
- */
-export const deleteAudioFromStorage = async (url: string): Promise<void> => {
-    if (!url || !url.includes('firebasestorage')) return;
-    try {
-        const fileRef = ref(storage, url);
-        await deleteObject(fileRef);
-    } catch (error) {
-        if (error instanceof StorageError && error.code === 'storage/object-not-found') {
-            console.warn(`Audio file not found at ${url}, it might have been already deleted.`);
-        } else {
-            console.error(`Error deleting audio file from storage: ${url}`, error);
-            throw new Error("Failed to delete audio file from storage.");
-        }
-    }
-};
+// --- Mantenemos las funciones específicas por retrocompatibilidad o claridad ---
+
+export const deleteImageFromStorage = deleteFileFromStorage;
+export const deleteAudioFromStorage = deleteFileFromStorage;

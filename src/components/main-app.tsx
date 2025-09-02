@@ -1,9 +1,10 @@
+
 "use client";
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Heart, Loader, Pause, Play, Share2, Mic, Info, Upload, Loader2, Image as ImageIcon, Maximize, PlusCircle, Video, Music } from "lucide-react";
+import { Loader2, Image as ImageIcon, Maximize, PlusCircle, Video, Music, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { Poem } from "@/lib/poems-data";
@@ -15,15 +16,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { playSound } from "@/lib/sound-service";
-import { AdBannerPlaceholder } from "@/components/ad-banner-placeholder";
 import { uploadImage, uploadAudio } from "@/lib/storage-service";
 import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, query, orderBy, limit, updateDoc, where, doc, addDoc, Timestamp, runTransaction, increment } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, updateDoc, where, doc, addDoc, Timestamp, runTransaction } from "firebase/firestore";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { getPublicImages, getCategoryImages } from "@/lib/actions";
+import { PoemActions } from "./poem-actions";
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 function convertTimestampToString(timestamp: any): string {
+    if (!timestamp) return new Date().toISOString();
     if (timestamp && typeof timestamp.toDate === 'function') {
         return timestamp.toDate().toISOString();
     }
@@ -36,7 +41,7 @@ type Category = {
   type: 'poema' | 'imagen' | 'multimedia';
   imageUrl?: string | null;
 };
-type AudioState = { isPlaying: boolean; isLoading: boolean; };
+type AudioState = { isPlaying: boolean; isLoading: boolean; poemId: string | null };
 const FAVORITES_KEY = 'amor-expressions-favorites-v1';
 
 function parseVideoUrl(url: string): { embedUrl: string; source: 'youtube' | 'dailymotion' } | null {
@@ -68,6 +73,7 @@ export function MainApp() {
   const { user, loading: authLoading, isAdmin } = useAuth();
   const [dailyPoem, setDailyPoem] = React.useState<Poem | null>(null);
   const [favorites, setFavorites] = React.useState<Set<string>>(new Set());
+  const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false, poemId: null });
   const [isUploading, setIsUploading] = React.useState<string | null>(null);
   const fileInputRefs = React.useRef<Record<string, HTMLInputElement | null>>({});
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -89,12 +95,12 @@ export function MainApp() {
   const imageCategories = React.useMemo(() => categories.filter(c => c.type === 'imagen').sort((a, b) => a.name.localeCompare(b.name)), [categories]);
   const multimediaCategories = React.useMemo(() => categories.filter(c => c.type === 'multimedia').sort((a, b) => a.name.localeCompare(b.name)), [categories]);
   
-  const localCategoryImages = React.useMemo(() => {
-    return categories.map(cat => `${cat.name.toLowerCase().replace(/\s+/g, '-')}.png`);
-  }, [categories]);
+  const [publicImages, setPublicImages] = React.useState<string[]>([]);
+  const [categoryImages, setCategoryImages] = React.useState<string[]>([]);
+
 
   React.useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitialData = async () => {
         setLoadingCategories(true);
         try {
             const categoriesCollection = collection(db, 'categories');
@@ -102,58 +108,39 @@ export function MainApp() {
             const querySnapshot = await getDocs(q);
             const fetchedCategories = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[];
             setCategories(fetchedCategories);
+
+            const fetchedPublicImages = await getPublicImages();
+            setPublicImages(fetchedPublicImages);
+
+            const fetchedCategoryImages = await getCategoryImages();
+            setCategoryImages(fetchedCategoryImages);
+            
+            const storedFavorites = localStorage.getItem(FAVORITES_KEY);
+            if (storedFavorites) setFavorites(new Set(JSON.parse(storedFavorites)));
+
+            const poemsCollection = collection(db, 'poems');
+            const dailyPoemQuery = query(poemsCollection, orderBy('createdAt', 'desc'), limit(50));
+            const dailyPoemSnapshot = await getDocs(dailyPoemQuery);
+            if (!dailyPoemSnapshot.empty) {
+                const poems = dailyPoemSnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() } as Poem & { id: string, category: string }))
+                    .filter(p => p.poem && typeof p.poem === 'string' && p.category !== 'Relatos Infidelidad');
+                
+                if (poems.length > 0) {
+                    const randomPoemData = poems[Math.floor(Math.random() * poems.length)];
+                    setDailyPoem({ ...randomPoemData, createdAt: convertTimestampToString(randomPoemData.createdAt) } as Poem);
+                }
+            }
+
         } catch (error) {
-            console.error("Error fetching categories (client):", error);
-            toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar las categorías." });
+            console.error("Error fetching initial data (client):", error);
+            toast({ variant: "destructive", title: "Error de red", description: "No se pudieron cargar los datos iniciales." });
         } finally {
             setLoadingCategories(false);
         }
     }
-    fetchCategories();
+    fetchInitialData();
   }, [toast]);
-
-  const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null);
-  const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false });
-  const utteranceRef = React.useRef<SpeechSynthesisUtterance | null>(null);
-  
-  React.useEffect(() => {
-    const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-    if (storedFavorites) setFavorites(new Set(JSON.parse(storedFavorites)));
-
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      setSpeechSynthesis(window.speechSynthesis);
-    }
-    
-    const loadDailyPoem = async () => {
-        try {
-            const poemsCollection = collection(db, 'poems');
-            const q = query(poemsCollection, orderBy('createdAt', 'desc'), limit(50));
-            const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty) {
-                setDailyPoem(null);
-                return;
-            }
-
-            const poems = querySnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() } as Poem & { id: string, category: string }))
-                .filter(p => p.poem && typeof p.poem === 'string') 
-                .filter(poem => poem.category !== 'Relatos Infidelidad');
-
-            if (poems.length === 0) {
-                setDailyPoem(null);
-                return;
-            }
-            
-            const randomPoemData = poems[Math.floor(Math.random() * poems.length)];
-            const poem = { ...randomPoemData, createdAt: convertTimestampToString(randomPoemData.createdAt) } as Poem;
-            setDailyPoem(poem);
-            
-        } catch (error) {
-            console.error("Error loading daily poem (client):", error);
-        }
-    };
-    loadDailyPoem();
-  }, []);
 
   const handleAddCategory = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -260,6 +247,7 @@ export function MainApp() {
   };
 
   const handleCategoryClick = (category: Category) => {
+    playSound('swoosh');
     if (category.type === 'multimedia') {
         router.push(`/multimedia/${encodeURIComponent(category.name)}`);
     } else if (category.type === 'imagen') {
@@ -269,95 +257,70 @@ export function MainApp() {
     }
   };
 
-  const handleCopy = (text: string) => { navigator.clipboard.writeText(text); toast({ title: "Copiado", description: "El poema ha sido copiado al portapapeles."}); };
+  const handleToggleFavorite = (poemId: string) => {
+    if (!poemId) return;
 
-  const handleShare = async (poem: Poem) => {
-    const shareText = `${poem.title}\n\n${poem.poem}`;
-    if (navigator.share) {
-      try { await navigator.share({ title: poem.title, text: shareText }); }
-      catch (error) { if ((error as Error).name !== 'AbortError') { toast({ variant: "destructive", title: "Error", description: "No se pudo compartir." }); } }
-    } else { handleCopy(shareText); }
-  };
-  
-  const handleToggleFavorite = async (poemId: string) => {
     const newFavorites = new Set(favorites);
-    const poemRef = doc(db, "poems", poemId);
-    let message = "";
+    let likesChange = 0;
 
-    try {
-      if (newFavorites.has(poemId)) {
-        newFavorites.delete(poemId);
-        await updateDoc(poemRef, { likes: increment(-1) });
-        message = "Eliminado de Favoritos";
-      } else {
-        newFavorites.add(poemId);
-        await updateDoc(poemRef, { likes: increment(1) });
-        message = "Añadido a Favoritos";
-      }
-      
-      setFavorites(newFavorites);
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(newFavorites)));
-      toast({ title: message });
-
-      if (dailyPoem && dailyPoem.id === poemId) {
-        setDailyPoem(prevPoem => {
-          if (!prevPoem) return null;
-          return {
-            ...prevPoem,
-            likes: prevPoem.likes + (newFavorites.has(poemId) ? 1 : -1)
-          };
-        });
-      }
-
-    } catch (error) {
-      console.error("Error updating likes:", error);
-      toast({ variant: "destructive", title: "Error", description: "No se pudo actualizar el favorito." });
-    }
-  };
-
-  const playAudio = React.useCallback((text: string) => {
-    if (!speechSynthesis) return;
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utteranceRef.current = utterance;
-    const voices = speechSynthesis.getVoices();
-    const spanishFemaleVoice = voices.find(voice => voice.lang.startsWith('es') && (voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('mujer')));
-    utterance.voice = spanishFemaleVoice || voices.find(voice => voice.lang.startsWith('es')) || voices.find(voice => voice.default) || null;
-    utterance.onstart = () => setAudioState({ isPlaying: true, isLoading: false });
-    utterance.onpause = () => setAudioState(prev => ({ ...prev, isPlaying: false }));
-    utterance.onresume = () => setAudioState(prev => ({ ...prev, isPlaying: true }));
-    utterance.onend = () => setAudioState({ isPlaying: false, isLoading: false });
-    speechSynthesis.speak(utterance);
-  }, [speechSynthesis]);
-
-  const handlePlayAudio = (text: string) => {
-    if (!speechSynthesis) return;
-    if (audioState.isPlaying && utteranceRef.current) return speechSynthesis.pause();
-    if (speechSynthesis.paused && utteranceRef.current) return speechSynthesis.resume();
-    setAudioState({ isPlaying: false, isLoading: true });
-    if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.onvoiceschanged = () => playAudio(text);
+    if (newFavorites.has(poemId)) {
+      newFavorites.delete(poemId);
+      likesChange = -1;
+      toast({ title: "Eliminado de Favoritos" });
     } else {
-        playAudio(text);
+      newFavorites.add(poemId);
+      likesChange = 1;
+      toast({ title: "Añadido a Favoritos" });
     }
+    
+    setFavorites(newFavorites);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(newFavorites)));
+
+    if (dailyPoem && dailyPoem.id === poemId) {
+        setDailyPoem(prev => prev ? { ...prev, likes: (prev.likes || 0) + likesChange } : null);
+    }
+
+    const poemRef = doc(db, "poems", poemId);
+    runTransaction(db, async (transaction) => {
+        const poemDoc = await transaction.get(poemRef);
+        if (!poemDoc.exists()) {
+            throw new Error("El poema no existe.");
+        }
+        const newLikes = (poemDoc.data().likes || 0) + likesChange;
+        transaction.update(poemRef, { likes: newLikes });
+    }).catch(error => {
+        console.error("Error updating likes:", error);
+    });
   };
 
-  const handleRecite = (poemId: string) => router.push(`/recite/${poemId}`);
-  const isNew = (poem: Poem) => new Date(poem.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const isNew = (poem: Poem) => {
+    if (!poem.createdAt) return false;
+    return new Date(poem.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+  };
 
-  const handleUpdateCategoryImage = async (category: Category, imageUrl: string, isLocal: boolean) => {
+  const handleUpdateCategoryImage = async (category: Category, imageSource: File | string) => {
       setIsUploading(category.name);
       const toastId = toast({ title: "Actualizando imagen..." }).id;
       try {
-          let finalUrl = imageUrl;
-          if (!isLocal) {
-              const blob = await (await fetch(imageUrl)).blob();
-              const file = new File([blob], `category-image-${Date.now()}.png`, { type: blob.type });
-              const fileName = `category-backgrounds/${category.id}-${file.name}`;
-              finalUrl = await uploadImage(file, fileName);
+          const categoriesCollection = collection(db, "categories");
+          const categoryQuery = await getDocs(query(categoriesCollection, where("name", "==", category.name)));
+
+          if (categoryQuery.empty) throw new Error("Category not found");
+          
+          const categoryDocRef = categoryQuery.docs[0].ref;
+          
+          let finalUrl = "";
+          if (typeof imageSource === 'string') {
+              // Si es una URL local (/image-categorias/...), la guardamos directamente.
+              finalUrl = imageSource;
+          } else {
+              // Si es un archivo, lo subimos a Storage.
+              const fileName = `category-backgrounds/${category.id}-${Date.now()}-${imageSource.name}`;
+              // Usamos la función uploadImage, que ya sube a Firebase Storage.
+              finalUrl = await uploadImage(imageSource, fileName);
           }
           
-          await updateDoc(doc(db, "categories", category.id), { imageUrl: finalUrl });
+          await updateDoc(categoryDocRef, { imageUrl: finalUrl });
           
           setCategories(prev => prev.map(cat => cat.id === category.id ? { ...cat, imageUrl: finalUrl } : cat));
           toast({ id: toastId, title: "¡Éxito!", description: "La imagen de la categoría ha sido actualizada." });
@@ -371,12 +334,12 @@ export function MainApp() {
 
   const renderCategoryCard = (category: Category) => {
     const isCatUploading = isUploading === category.name;
-    const localImagePath = `/image-categorias/${category.name.toLowerCase().replace(/\s+/g, '-')}.png`;
-    const effectiveImageUrl = category.imageUrl || localImagePath;
+    const hasImage = !!category.imageUrl;
+    const effectiveImageUrl = hasImage ? category.imageUrl! : `https://placehold.co/600x400/6366f1/ffffff?text=${encodeURIComponent(category.name)}`;
     
     return (
         <Card key={category.id} className="overflow-hidden group relative shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="w-full aspect-[4/3] cursor-pointer relative" onClick={() => { playSound('swoosh'); handleCategoryClick(category); }}>
+            <div className="w-full aspect-[4/3] cursor-pointer relative" onClick={() => handleCategoryClick(category)}>
                 <Image 
                     src={effectiveImageUrl} 
                     alt={category.name} 
@@ -386,34 +349,33 @@ export function MainApp() {
                     onError={(e) => { e.currentTarget.src = `https://placehold.co/600x400/6366f1/ffffff?text=${encodeURIComponent(category.name)}`; }}
                 />
                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
-                {!category.imageUrl && (
-                    <div className="absolute inset-0 p-4 flex items-center justify-center">
+                <div className="absolute inset-0 p-4 flex items-center justify-center">
+                    {!hasImage && (
                         <h3 className={`font-headline font-bold text-white text-center text-xl md:text-2xl p-2 text-shadow-md`}>{category.name}</h3>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-            {!authLoading && isAdmin && (
+            {!isProduction && !authLoading && isAdmin && (
                 <div className="absolute top-2 right-2 opacity-80 group-hover:opacity-100 transition-opacity">
                    <Dialog>
                         <DialogTrigger asChild>
-                            <Button size="sm" variant="secondary" onClick={(e) => e.stopPropagation()} disabled={isCatUploading}>
+                            <Button size="icon" variant="secondary" className="h-8 w-8" onClick={(e) => e.stopPropagation()} disabled={isCatUploading}>
                                 {isCatUploading ? <Loader2 className="w-4 h-4 animate-spin"/> : <ImageIcon className="w-4 h-4" />}
-                                <span className="ml-2 hidden sm:inline">{isCatUploading ? "Subiendo..." : "Cambiar"}</span>
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl">
                             <DialogHeader>
                                 <DialogTitle>Cambiar imagen para "{category.name}"</DialogTitle>
                                 <DialogDescription>
-                                    Elige una imagen de la galería local o sube un nuevo archivo. La imagen se guardará en Firebase.
+                                    Elige una imagen de la galería pública o sube un nuevo archivo. La imagen se guardará en Firebase.
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="py-4">
-                                <h4 className="font-semibold mb-2">Seleccionar de la galería local</h4>
+                                <h4 className="font-semibold mb-2">Seleccionar de la galería de categorías</h4>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-64 overflow-y-auto">
-                                    {localCategoryImages.map(imgName => (
-                                        <div key={imgName} className="relative aspect-square cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary" onClick={() => handleUpdateCategoryImage(category, `/image-categorias/${imgName}`, true)}>
-                                            <Image src={`/image-categorias/${imgName}`} alt={imgName} fill sizes="100px" className="object-cover"/>
+                                    {categoryImages.map(imgUrl => (
+                                        <div key={imgUrl} className="relative aspect-square cursor-pointer rounded-md overflow-hidden border-2 border-transparent hover:border-primary" onClick={() => handleUpdateCategoryImage(category, imgUrl)}>
+                                            <Image src={imgUrl} alt={imgUrl} fill sizes="100px" className="object-cover"/>
                                         </div>
                                     ))}
                                 </div>
@@ -423,7 +385,7 @@ export function MainApp() {
                                 </div>
                                 <input type="file" ref={(el) => { if (el) fileInputRefs.current[category.name] = el; }} className="hidden" accept="image/*" onChange={(e) => {
                                     const file = e.target.files?.[0];
-                                    if(file) handleUpdateCategoryImage(category, URL.createObjectURL(file), false);
+                                    if(file) handleUpdateCategoryImage(category, file);
                                 }}/>
                                 <Button className="w-full" variant="outline" onClick={() => fileInputRefs.current[category.name]?.click()}>
                                     <Upload className="mr-2 h-4 w-4"/> Subir una imagen nueva
@@ -440,7 +402,7 @@ export function MainApp() {
   return (
     <main className="flex-1">
       <div className="container mx-auto py-8 px-4">
-          {isAdmin && (
+          {!isProduction && isAdmin && (
               <Card className="mb-8 border-primary/20">
                 <CardHeader><CardTitle className="font-headline text-primary">Panel de Administrador</CardTitle></CardHeader>
                 <CardContent>
@@ -495,7 +457,7 @@ export function MainApp() {
                                     onChange={(e) => e.target.files && setNewAudioFile(e.target.files[0])}
                                     disabled={isAddingMedia}
                                 />
-                                <Button type="submit" disabled={isAddingMedia}>
+                                <Button type="submit" disabled={isAddingMedia || !newAudioFile || !newAudioCategory || !newAudioTitle}>
                                     {isAddingMedia ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Music className="mr-2 h-4 w-4" />}
                                     Guardar Audio
                                 </Button>
@@ -523,7 +485,7 @@ export function MainApp() {
                                     onChange={(e) => setNewVideoUrl(e.target.value)}
                                     disabled={isAddingMedia}
                                 />
-                                <Button type="submit" disabled={isAddingMedia}>
+                                <Button type="submit" disabled={isAddingMedia || !newVideoUrl || !newVideoCategory || !newVideoTitle}>
                                     {isAddingMedia ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Video className="mr-2 h-4 w-4" />}
                                     Guardar Video
                                 </Button>
@@ -536,9 +498,9 @@ export function MainApp() {
 
           <Tabs defaultValue="poems" className="w-full">
             <TabsList className="grid w-full grid-cols-3 h-auto rounded-none -mt-px bg-primary/10">
-              <TabsTrigger value="poems" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline" onClick={() => playSound('swoosh')}>Poemas</TabsTrigger>
-              <TabsTrigger value="images" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline" onClick={() => playSound('swoosh')}>Imágenes</TabsTrigger>
-              <TabsTrigger value="multimedia" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline" onClick={() => playSound('swoosh')}>Multimedia</TabsTrigger>
+              <TabsTrigger value="poems" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline">Poemas</TabsTrigger>
+              <TabsTrigger value="images" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline">Imágenes</TabsTrigger>
+              <TabsTrigger value="multimedia" className="rounded-none py-3 data-[state=active]:text-primary data-[state=active]:border-b-2 border-primary data-[state=active]:bg-primary/5 font-headline">Multimedia</TabsTrigger>
             </TabsList>
             
             <TabsContent value="poems" className="pt-6">
@@ -547,7 +509,6 @@ export function MainApp() {
                   <h2 className="text-3xl font-headline mb-4 text-primary/90">Poema Sugerido</h2>
                     <Card className="bg-accent/20 border-accent shadow-lg hover:shadow-xl transition-shadow flex flex-col overflow-hidden">
                        <div className="relative aspect-[4/3] w-full">
-                          {/* --- LÍNEA CORREGIDA --- */}
                           {(dailyPoem.imageUrl || dailyPoem.image) ? (
                             <Image src={dailyPoem.imageUrl || dailyPoem.image} alt={dailyPoem.title} fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover"/>
                           ): <Skeleton className="h-full w-full" />}
@@ -555,26 +516,20 @@ export function MainApp() {
                               <Maximize className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                            {isNew(dailyPoem) && (<Badge className="absolute top-2 right-2">Nuevo</Badge>)}
-                           {dailyPoem.photographerName && (
-                              <Popover>
-                               <PopoverTrigger asChild><Button variant="ghost" size="icon" className="absolute bottom-2 left-2 bg-black/30 hover:bg-black/50 text-white rounded-full h-8 w-8"><Info className="w-4 h-4"/></Button></PopoverTrigger>
-                               <PopoverContent className="w-auto text-sm">Foto de <Link href={dailyPoem.photographerUrl || '#'} target="_blank" className="underline hover:text-primary">{dailyPoem.photographerName}</Link></PopoverContent>
-                              </Popover>
-                           )}
                        </div>
-                      <CardContent className="flex-1 p-4"><p className="text-foreground/80 whitespace-pre-line font-body italic py-2 text-base">{dailyPoem.poem}</p></CardContent>
-                      <CardFooter className="flex justify-between items-center bg-accent/30 p-2">
-                        <div className="flex items-center">
-                          <Button variant="ghost" size="icon" onClick={() => handleCopy(`${dailyPoem.title}\n\n${dailyPoem.poem}`)} title="Copiar poema"><Copy className="w-5 h-5" /></Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleShare(dailyPoem)} title="Compartir poema"><Share2 className="w-5 h-5" /></Button>
-                          <Button variant="ghost" size="icon" onClick={() => handlePlayAudio(`${dailyPoem.title}. ${dailyPoem.poem}`)} disabled={audioState.isLoading} title="Reproducir poema">
-                            {audioState.isLoading ? <Loader className="w-5 h-5 animate-spin" /> : audioState.isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                          </Button>
-                           <Button variant="ghost" size="icon" onClick={() => handleRecite(dailyPoem.id)} title="Recitar y Grabar"><Mic className="w-5 h-5" /></Button>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={() => handleToggleFavorite(dailyPoem.id)} title="Añadir a favoritos">
-                          <Heart className={`w-6 h-6 transition-colors ${favorites.has(dailyPoem.id) ? 'text-red-500 fill-current' : 'text-muted-foreground'}`} />
-                        </Button>
+                      <CardHeader className="p-4 flex-1">
+                        <CardTitle className="font-headline text-primary mb-2">{dailyPoem.title}</CardTitle>
+                        <p className="text-foreground/80 whitespace-pre-line font-body italic py-2 text-base">{dailyPoem.poem}</p>
+                      </CardHeader>
+                      <CardFooter className="flex justify-center items-center bg-accent/30 p-2 border-t">
+                        <PoemActions
+                            poem={dailyPoem}
+                            isFavorite={favorites.has(dailyPoem.id)}
+                            onToggleFavorite={handleToggleFavorite}
+                            audioState={audioState}
+                            setAudioState={setAudioState}
+                            showEdit={!isProduction && isAdmin}
+                        />
                       </CardFooter>
                     </Card>
                 </section>
@@ -602,6 +557,7 @@ export function MainApp() {
             </TabsContent>
 
             <TabsContent value="multimedia" className="pt-6">
+                <h2 className="text-3xl font-headline mb-4 text-primary/90">Categorías de Multimedia</h2>
                 <div className="grid grid-cols-2 gap-4">
                     {loadingCategories ? ( Array.from({ length: 4 }).map((_, i) => ( <Card key={i}><Skeleton className="aspect-[4/3] w-full" /></Card> )) ) : ( 
                         multimediaCategories.length > 0 ? (
@@ -614,7 +570,6 @@ export function MainApp() {
             </TabsContent>
           </Tabs>
       </div>
-      <AdBannerPlaceholder />
     </main>
   );
 }

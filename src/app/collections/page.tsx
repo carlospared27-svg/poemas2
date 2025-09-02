@@ -1,3 +1,4 @@
+
 // src/app/collections/page.tsx
 
 "use client";
@@ -18,7 +19,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Poem } from "@/lib/poems-data";
 import { db } from "@/lib/firebase";
@@ -28,6 +28,7 @@ import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import { getPublicImages } from "@/lib/actions";
 
 type Collection = {
   name: string;
@@ -57,18 +58,6 @@ export default function CollectionsPage() {
     // --- CORRECCIÓN: Estado para almacenar el origen de la URL de forma segura ---
     const [pageOrigin, setPageOrigin] = React.useState("");
 
-    const getPublicImages = React.useCallback(async () => {
-        // Simulación de rutas de imágenes públicas
-        return [
-            '/imagenes-poemas/imagen28.png',
-            '/imagenes-poemas/imagen2.png',
-            '/imagenes-poemas/imagen3.png',
-            '/imagenes-poemas/imagen4.png',
-            '/imagenes-poemas/imagen5.png',
-            '/imagenes-poemas/imagen6.png',
-        ];
-    }, []);
-
     // --- CORRECCIÓN: Toda la lógica que depende del navegador se queda dentro de useEffect ---
     React.useEffect(() => {
         // Asignamos las APIs del navegador a los estados solo cuando el componente se monta en el cliente
@@ -77,54 +66,54 @@ export default function CollectionsPage() {
             setSpeechSynthesis(window.speechSynthesis);
           }
           setPageOrigin(window.location.origin);
-        }
 
-        const loadCollections = async () => {
-          setLoading(true);
-          try {
-            const fetchedPublicImages = await getPublicImages();
-            setPublicImages(fetchedPublicImages);
-
-            // localStorage solo se accede aquí, dentro de useEffect
-            const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-            const favoriteIds: string[] = storedFavorites ? JSON.parse(storedFavorites) : [];
-            let favoritePoems: Poem[] = [];
-
-            if (favoriteIds.length > 0) {
-                const poemsCollectionRef = collection(db, 'poems');
-                const chunks = [];
-                for (let i = 0; i < favoriteIds.length; i += 30) {
-                    chunks.push(favoriteIds.slice(i, i + 30));
-                }
-                const promises = chunks.map(chunk => {
-                    const poemsQuery = query(poemsCollectionRef, where(documentId(), 'in', chunk));
-                    return getDocs(poemsQuery);
-                });
-                const snapshots = await Promise.all(promises);
-                snapshots.forEach(snapshot => {
-                    favoritePoems.push(...snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Poem[]);
-                });
+          const loadCollections = async () => {
+            setLoading(true);
+            try {
+              const fetchedPublicImages = await getPublicImages();
+              setPublicImages(fetchedPublicImages);
+  
+              // localStorage solo se accede aquí, dentro de useEffect
+              const storedFavorites = localStorage.getItem(FAVORITES_KEY);
+              const favoriteIds: string[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+              let favoritePoems: Poem[] = [];
+  
+              if (favoriteIds.length > 0) {
+                  const poemsCollectionRef = collection(db, 'poems');
+                  const chunks = [];
+                  for (let i = 0; i < favoriteIds.length; i += 30) {
+                      chunks.push(favoriteIds.slice(i, i + 30));
+                  }
+                  const promises = chunks.map(chunk => {
+                      const poemsQuery = query(poemsCollectionRef, where(documentId(), 'in', chunk));
+                      return getDocs(poemsQuery);
+                  });
+                  const snapshots = await Promise.all(promises);
+                  snapshots.forEach(snapshot => {
+                      favoritePoems.push(...snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Poem[]);
+                  });
+              }
+  
+              const storedSubmissions = localStorage.getItem(SUBMISSIONS_KEY);
+              const submittedPoems: Poem[] = storedSubmissions ? JSON.parse(storedSubmissions) : [];
+              
+              const allCollections: Collection[] = [
+                { name: "Favoritos", poems: favoritePoems },
+                { name: "Mis Envíos", poems: submittedPoems },
+              ];
+  
+              setCollections(allCollections);
+              setSelectedCollection(allCollections[0] || null);
+            } catch (error) {
+              console.error("Error loading collections:", error);
+              toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar las colecciones." });
+            } finally {
+              setLoading(false);
             }
-
-            const storedSubmissions = localStorage.getItem(SUBMISSIONS_KEY);
-            const submittedPoems: Poem[] = storedSubmissions ? JSON.parse(storedSubmissions) : [];
-            
-            const allCollections: Collection[] = [
-              { name: "Favoritos", poems: favoritePoems },
-              { name: "Mis Envíos", poems: submittedPoems },
-            ];
-
-            setCollections(allCollections);
-            setSelectedCollection(allCollections[0] || null);
-          } catch (error) {
-            console.error("Error loading collections:", error);
-            toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar las colecciones." });
-          } finally {
-            setLoading(false);
           }
+          loadCollections();
         }
-        loadCollections();
-    }, [toast, getPublicImages]);
+    }, [toast]);
     
     const getPoemDisplayImage = React.useCallback((poem: Poem): string => {
         if (typeof poem.image === 'string' && poem.image.startsWith(LOCAL_IMAGE_PREFIX)) {

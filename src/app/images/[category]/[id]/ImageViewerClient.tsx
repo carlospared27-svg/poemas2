@@ -1,3 +1,4 @@
+
 // app/images/[category]/[id]/ImageViewerClient.tsx
 
 "use client";

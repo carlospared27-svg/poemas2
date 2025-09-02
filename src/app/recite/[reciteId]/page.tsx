@@ -2,7 +2,7 @@
 
 import { getPoemById, getAllPoems } from "@/lib/actions";
 import { Poem } from "@/lib/poems-data";
-import { ReciteLoader } from "./ReciteLoader"; // <-- Importamos nuestro nuevo componente
+import { ReciteLoader } from "./ReciteLoader"; // Importamos el nuevo loader
 
 export async function generateStaticParams() {
   const poems = await getAllPoems();
@@ -23,6 +23,7 @@ export default async function RecitePage({ params }: { params: { reciteId: strin
     );
   }
 
-  // Ahora simplemente renderizamos el ReciteLoader y le pasamos los datos
+  // La página del servidor ahora solo obtiene datos y renderiza el loader,
+  // pasándole el poema. El loader se encargará de la carga dinámica en el cliente.
   return <ReciteLoader poem={poem} />;
 }

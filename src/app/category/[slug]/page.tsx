@@ -1,3 +1,5 @@
+// src/app/category/[slug]/page.tsx
+
 import { getCategories, getPoemsForCategory } from "@/lib/poems-service";
 import { CategoryClient } from "./CategoryClient"; 
 import { Poem } from "@/lib/poems-data";
@@ -8,9 +10,11 @@ const POEMS_PER_PAGE = 6;
 // Esta función se ejecuta en el servidor durante la compilación
 export async function generateStaticParams() {
   const categories = await getCategories();
-  return categories.map((category: { name: string }) => ({
-    slug: encodeURIComponent(category.name),
-  }));
+  return categories
+    .filter((category: any) => category.type === 'poema') // Asegurarnos de que solo sean categorías de poemas
+    .map((category: { name: string }) => ({
+      slug: encodeURIComponent(category.name),
+    }));
 }
 
 // Esta es la página del servidor

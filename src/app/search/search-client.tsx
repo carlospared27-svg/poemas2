@@ -58,16 +58,13 @@ export function SearchClient({ initialQuery }: { initialQuery: string }) {
   );
 }
 
-// --- FUNCIÓN CORREGIDA ---
 function CustomHits() {
   const { hits, results } = useHits();
   const searchQuery = results?.query || "";
-
-  // Mapeamos los resultados para crear un nuevo array donde 'objectID' se asigna a 'id'.
-  const poems = hits.map(hit => ({
-    ...hit,
-    id: hit.objectID, // Asignamos el objectID de Algolia a la propiedad id que espera la app
-  })) as unknown as (Poem & { category: string })[];
+  
+  // Se pasan los 'hits' directamente como están.
+  // El componente de visualización se encargará de mapear objectID a id.
+  const poems = hits as unknown as (Poem & { category: string, objectID: string })[];
 
   return <SearchResultsDisplay poems={poems} searchQuery={searchQuery} />;
 }

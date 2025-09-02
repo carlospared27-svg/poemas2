@@ -12,7 +12,6 @@ import { Heart, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "../ui/input";
-import { AdBannerPlaceholder } from "@/components/ad-banner-placeholder"; // 1. Importa tu componente
 
 type MainLayoutProps = {
   children: React.ReactNode;
@@ -65,12 +64,7 @@ export function MainLayout({ children, showHeader = true }: MainLayoutProps) {
               </div>
             </header>
           )}
-          {/* 2. El contenido principal ahora está envuelto en un 'main' que se expande */}
           <main className="flex-1">{children}</main>
-          {/* 3. El banner se añade al final, fuera del área de scroll */}
-          <div className="w-full flex-shrink-0">
-            <AdBannerPlaceholder />
-          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

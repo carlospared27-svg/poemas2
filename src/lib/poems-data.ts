@@ -24,7 +24,7 @@ const generateId = (title: string, category: string) => {
 };
 
 const rawPoemsData: PoemsByCategory = {
-  "Poemas Cortos": [
+  "Poemascortos": [
     {
       "title": "Instante",
       "poem": "Un suspiro, una mirada...\n¡el universo en tu ser!",
@@ -531,7 +531,7 @@ const rawPoemsData: PoemsByCategory = {
     },
     {
       "title": "Reloj ⏳",
-      "poem": "Contigo, el tiempo se detiene...\nojalá para siempre.",
+      "poem": "Contigo, el tiempo se detiene...\nojala para siempre.",
       "createdAt": new Date().toISOString(),
       "likes": 37,
       "shares": 18,
@@ -656,7 +656,7 @@ const rawPoemsData: PoemsByCategory = {
       "imageHint": "dream end"
     }
   ],
-  "Versos de Amor": [
+  "Versosdeamor": [
     {
       "title": "Tu Geografia",
       "poem": "Recorro el mapa de tu piel...\ncada lunar, una ciudad que anhelo conquistar.\nTu espalda, cordillera de secretos,\ny tus labios... ¡el mar donde quiero naufragar!",
@@ -1054,7 +1054,7 @@ const rawPoemsData: PoemsByCategory = {
       "imageHint": "eyes well"
     }
   ],
-  "Cartas Apasionadas": [
+  "Cartasapasionadas": [
     {
       "title": "Mi Adorada Tortura",
       "poem": "Eres la más dulce de las torturas, la fiebre que me consume y me da vida... Cada noche, tu recuerdo me visita en la penumbra, y mi cuerpo arde en una hoguera encendida. Anhelo el roce de tu piel contra la mía, el sabor de tus besos que me roban la razón... ¡Esta distancia es una cruel agonía, pero alimenta la llama de esta inmensa pasión!",
@@ -1434,7 +1434,7 @@ const rawPoemsData: PoemsByCategory = {
       "imageHint": "pending subject"
     }
   ],
-  "Frases para Enamorar": [
+  "Frasesparaenamorar": [
      {
       "title": "Mi Cafe Favorito",
       "poem": "Mi café favorito... siempre será el de tus ojos.",
@@ -2493,7 +2493,7 @@ const rawPoemsData: PoemsByCategory = {
       "imageHint": "we were"
     }
   ],
-  "Poemas con Nombres": [
+  "Poemasconnombres": [
     {
       "title": "Para Sofia",
       "poem": "Sofía, tu nombre es sabiduría,\nuna melodía que alegra mi día.\nEn tus ojos, un universo de filosofía,\ny en tu sonrisa, la más pura alegría.",
@@ -3125,7 +3125,7 @@ const rawPoemsData: PoemsByCategory = {
       "imageHint": "little lion"
     }
   ],
-  "Relatos Infidelidad": [
+  "Relatosinfidelidad": [
     {
       "title": "La corazonada de las 2 de la mañana y el perfume que no era el mío",
       "poem": "La infidelidad no llega con una carta certificada ni con un aviso en el periódico. No, al menos no la mía. La mía llegó en susurros, en pequeñas astillas que se te clavan en el alma y que tratas de ignorar porque arrancarlas dolería demasiado. La mía empezó, o mejor dicho, yo empecé a darme cuenta, una noche de martes a las dos y pico de la mañana.\n\nLlevábamos cinco años juntos, Daniel y yo. Cinco años de construir algo que yo creía sólido como una pared de ladrillos. Teníamos nuestro apartamento, nuestro perro, nuestras manías y hasta un plan borroso de casarnos 'algún día'. Para mí, él era mi casa. El lugar al que volvía siempre, sin importar qué tan feo se pusiera el mundo afuera. Pero desde hacía unos meses, las paredes de esa casa se sentían frías, llenas de corrientes de aire que no sabía de dónde venían.\n\nEran cosas pequeñas, casi invisibles. Su celular, que antes era un objeto más en la casa, ahora parecía una extensión de su mano, siempre boca abajo sobre la mesa. Las 'reuniones hasta tarde' se habían vuelto el pan de cada día. 'Es que cerramos un proyecto grande, Valeria, ya sabes cómo es esto', me decía. Y yo le creía. O quería creerle. Porque la alternativa era un abismo al que no me atrevía a mirar.\n\nEsa noche de martes, llegó a las dos y cuarto. Entró de puntillas, pensando que yo dormía. Me quedé quieta, con los ojos cerrados, escuchando el sonido de su ropa cayendo al suelo. Cuando se metió en la cama, el frío de sus pies rozó los míos, pero fue otro frío el que me heló la sangre. Un olor. Un perfume de mujer, dulce y floral, que definitivamente no era el mío, que era más cítrico. Se mezclaba con el olor a cigarrillo, y él no fumaba. No desde que lo conocí.\n\n'¿Dónde estabas?', le pregunté en un susurro, sin abrir los ojos.\n\nSe sobresaltó. 'Me despertaste. Con clientes, mi amor. Te dije que era una cena importante'.\n\n'Olía a que fue muy importante', pensé, pero no dije nada. Me di la vuelta, dándole la espalda, y sentí cómo el espacio entre nosotros en la cama se convertía en un océano. Esa noche no dormí. Me la pasé mirando el techo, un lienzo en blanco donde mi cabeza proyectaba las peores películas.\n\nLa mañana siguiente fue el detonante. Él se metió a bañar, y su teléfono, ese objeto maldito, empezó a vibrar sobre la mesita de noche. Una, dos, tres veces. No era una llamada, eran mensajes. La pantalla se iluminó con una notificación de WhatsApp que decía: 'Anoche fue increíble. ¿Repetimos pronto? 😉'. Y debajo, el nombre: 'Andrea'.\n\nEl aire se me fue de los pulmones. Se siente exactamente como te lo cuentan: como un puñetazo en el estómago que te deja sin aire, pero el dolor sube hasta la garganta y se convierte en un nudo que no te deja ni tragar saliva. Mis manos temblaban tanto que casi no podía sostener el celular. Desbloquearlo fue un impulso, una traición a la confianza que, irónicamente, él ya había hecho polvo. Su clave era la fecha de nuestro aniversario. Qué cruel. Qué cliché tan doloroso.\n\nAhí estaba todo. El chat con Andrea. No tuve que bajar mucho. Semanas de conversaciones. 'Te extraño', 'No dejo de pensar en ti', fotos de ella que no me atreví a abrir, planes para 'escapadas de trabajo' que ahora entendía perfectamente. Hablaban de mí. 'Valeria ni se entera', 'Está muy metida en su trabajo'. Cada palabra era una puñalada. Me llamaban 'la rutina', 'el compromiso'. Y yo, mientras tanto, le preparaba su comida favorita y le compraba esas camisas que tanto le gustaban.\n\nUna de esas camisas, la azul claro que le regalé para su cumpleaños, aparecía en una foto que sí abrí. Estaba en un bar que yo no conocía, y al lado de él, una mujer con el pelo rojo y una sonrisa que parecía devorarlo. Andrea. Sentí náuseas. Salí del cuarto de baño justo cuando él salía de la ducha, envuelto en una toalla, con el pelo mojado y una sonrisa en la cara.\n\n'Buenos días, dormilona', me dijo, acercándose para darme un beso.\n\nLo esquivé. Levanté su celular. No tuve que decir nada. Su cara se transformó. La sonrisa se borró y fue reemplazada por una máscara de pánico. El color se le fue del rostro. Ese fue el momento. El momento en que la negación se rinde y la verdad, horrible y afilada, toma su lugar. \n\n'Valeria... yo te lo puedo explicar'. La frase más inútil del mundo. ¿Explicar qué? ¿Qué cada 'te quiero' de los últimos meses había sido una mentira? ¿Que cada noche que llegaba tarde no era por trabajo, sino porque estaba enredado en otras sábanas, en otros brazos, en otra vida?\n\nLa conversación que siguió fue un desastre. Un huracán de gritos, lágrimas y excusas patéticas. 'Fue un error', 'Estaba confundido', 'Tú y yo estábamos distanciados'. Culpas, culpas por todas partes, rebotando en las paredes de nuestro apartamento, que de repente se sentía ajeno, contaminado.\n\nLo eché de casa. Metí su ropa en bolsas de basura mientras él me suplicaba que no lo hiciera. Cada prenda que tocaba tenía un recuerdo pegado, y arrancarlo era como despellejarme viva. Cuando cerré la puerta detrás de él, el silencio fue ensordecedor. Miré nuestro hogar, nuestra 'fortaleza', y vi las ruinas. El cuadro que pintamos juntos, el sofá donde vimos tantas películas, el perro que nos miraba sin entender nada... todo estaba roto.\n\nEsa noche, cuando la adrenalina bajó, llegó el dolor de verdad. Un dolor físico, profundo, que se instala en el pecho y no te deja respirar. Te preguntas qué hiciste mal, en qué fallaste. Repasas cada momento, cada discusión, buscando una pista que te perdiste. Te sientes estúpida, ingenua. La confianza, una vez que se rompe, no se puede pegar. Quedan las grietas, recordándote siempre que una vez estuvo hecha pedazos.\n\nLa infidelidad no es solo el sexo, o los besos con otra persona. Es la mentira. Es el tejido de engaños que construyen a tus espaldas. Es saber que la persona en la que confiabas ciegamente te ha estado mirando a los ojos y mintiéndote sin pestañear. Es el asesinato de un futuro que creías seguro. Y ese duelo, el duelo por la vida que no será, es el más largo y solitario de todos.",
@@ -3191,18 +3191,18 @@ const rawPoemsData: PoemsByCategory = {
     }
   ],
   // Empty categories for images, to be populated by the seed script
-  "Imágenes con nombres": [],
-  "Fondos de pantalla Romantico": [],
-  "Imágenes de Amor": [],
-  "Imágenes Buenos días mi Amor": [],
-  "Imágenes de Buenas Noches": [],
-  "Imágenes románticas para enamorados": [],
-  "Tarjetas de amor para enviar por Whatsapp": [],
-  "Animes con frases bonitas": [],
-  "Como Besa tu signo": [],
-  "Gifs Animados de Rosas con frases": [],
-  "Gifs de Buenos Días Mi Amor": [],
-  "Gifs de Buenas Noches mi Amor": [],
+  "Imagenesconnombres": [],
+  "Fondosdepantallaromantico": [],
+  "Imagenesdeamor": [],
+  "Imagenesbuenosdiasmiamor": [],
+  "Imagenesdebuenasnoches": [],
+  "Imagenesromanticasparaenamorados": [],
+  "Tarjetasdeamorparaenviarporwhatsapp": [],
+  "Animesconfrasesbonitas": [],
+  "Comobesatusigno": [],
+  "Gifsanimadosderosasconfrases": [],
+  "Gifsdebuenosdiasmiamor": [],
+  "Gifsdebuenasnochesmiamor": [],
 };
 
 // Process raw data to add unique IDs
@@ -3213,3 +3213,6 @@ export const poemsData: Record<string, Poem[]> = Object.entries(rawPoemsData).re
     }));
     return acc;
 }, {} as Record<string, Poem[]>);
+
+
+    

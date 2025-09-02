@@ -1,3 +1,4 @@
+// src/app/admin/add-poem/page.tsx
 "use client";
 
 import * as React from "react";
@@ -14,14 +15,19 @@ import { Loader2, Send } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { addAdminPoem } from "@/lib/actions";
+import { addAdminPoem } from "@/lib/poems-service";
 
 type Category = {
     id: string;
     name: string;
 };
 
-export default function AdminAddPoemPage() {
+const AdminAddPoemPage = () => {
+    // Si estamos en producción, esta página no estará disponible.
+    if (process.env.NODE_ENV === 'production') {
+      return null;
+    }
+    
     const { isAdmin, user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -34,8 +40,6 @@ export default function AdminAddPoemPage() {
     const [imageFile, setImageFile] = React.useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-    // --- CAMBIO CLAVE: Lógica de redirección movida a useEffect ---
-    // Esto asegura que la redirección solo ocurra en el navegador.
     React.useEffect(() => {
         if (user && !isAdmin) {
             toast({
@@ -47,7 +51,6 @@ export default function AdminAddPoemPage() {
         }
     }, [isAdmin, user, router, toast]);
 
-    // Cargar categorías de poemas
     React.useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -74,18 +77,17 @@ export default function AdminAddPoemPage() {
         }
         
         setIsSubmitting(true);
-        // Creamos un FormData para enviar el archivo correctamente a la Server Action
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('poem', poemContent);
-        formData.append('category', selectedCategory);
-        formData.append('author', author || "Poemas & Versos");
-        if (imageFile) {
-            formData.append('imageFile', imageFile);
-        }
+        
+        const poemData = {
+            title: title,
+            poem: poemContent,
+            category: selectedCategory,
+            author: author || "Poemas & Versos",
+            imageFile: imageFile,
+        };
 
         try {
-            await addAdminPoem(formData);
+            await addAdminPoem(poemData);
 
             toast({ title: "¡Éxito!", description: "El poema ha sido añadido correctamente." });
             router.push(`/category/${selectedCategory}`);
@@ -97,8 +99,6 @@ export default function AdminAddPoemPage() {
         }
     };
     
-    // --- CAMBIO CLAVE: Renderizado condicional ---
-    // Muestra un estado de carga o nada si el usuario no es admin, evitando que el formulario se muestre brevemente.
     if (!isAdmin) {
         return (
             <MainLayout>
@@ -157,4 +157,6 @@ export default function AdminAddPoemPage() {
             </div>
         </MainLayout>
     );
-}
+};
+
+export default AdminAddPoemPage;

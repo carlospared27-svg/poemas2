@@ -1,3 +1,4 @@
+
 // src/app/poem/[poemId]/PoemClient.tsx
 
 "use client";
@@ -5,50 +6,45 @@
 import * as React from "react";
 import Image from "next/image";
 import { MainLayout } from "@/components/layout/main-layout";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import { Poem } from "@/lib/poems-data";
-import { Copy, Share2, Heart, Mic, Play, Pause, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { PoemActions, AudioState } from "@/components/poem-actions";
+import { useAuth } from "@/components/auth-provider";
 
-type AudioState = {
-  isPlaying: boolean;
-  isLoading: boolean;
-};
+const FAVORITES_KEY = 'amor-expressions-favorites-v1';
 
-export function PoemClient({ poem }: { poem: Poem }) {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [speechSynthesis, setSpeechSynthesis] = React.useState<SpeechSynthesis | null>(null);
-  const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false });
+export function PoemClient({ poem }: { poem: Poem | null }) {
+  const { isAdmin } = useAuth();
+  const [audioState, setAudioState] = React.useState<AudioState>({ isPlaying: false, isLoading: false, poemId: null });
+  const [favorites, setFavorites] = React.useState<Set<string>>(new Set());
 
   React.useEffect(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      setSpeechSynthesis(window.speechSynthesis);
+    const storedFavorites = localStorage.getItem(FAVORITES_KEY);
+    if (storedFavorites) {
+      setFavorites(new Set(JSON.parse(storedFavorites)));
     }
   }, []);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(`${poem.title}\n\n${poem.poem}`);
-    toast({ title: "Copiado", description: "El poema se copió al portapapeles." });
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({ title: poem.title, text: poem.poem });
+  const handleToggleFavorite = (poemId: string) => {
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(poemId)) {
+        newFavorites.delete(poemId);
     } else {
-      handleCopy();
+        newFavorites.add(poemId);
     }
-  };
-
-  const handleRecite = () => {
-    router.push(`/recite/${poem.id}`);
+    setFavorites(newFavorites);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(newFavorites)));
   };
   
-  const handlePlayAudio = () => {
-    toast({ title: "Función de audio pendiente" });
-  };
+  if (!poem) {
+      return (
+        <MainLayout>
+            <div className="flex items-center justify-center h-[calc(100vh-57px)]">
+                <p>Poema no encontrado.</p>
+            </div>
+        </MainLayout>
+      )
+  }
 
   return (
     <MainLayout>
@@ -72,26 +68,15 @@ export function PoemClient({ poem }: { poem: Poem }) {
               {poem.poem}
             </p>
           </CardContent>
-          <CardFooter className="p-2 flex justify-between items-center border-t bg-muted/50">
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" title="Añadir a favoritos">
-                <Heart className="w-5 h-5" />
-              </Button>
-            </div>
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" onClick={handlePlayAudio} title="Escuchar poema">
-                {audioState.isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (audioState.isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />)}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleRecite} title="Recitar y Grabar">
-                <Mic className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleCopy} title="Copiar poema">
-                <Copy className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleShare} title="Compartir poema">
-                <Share2 className="w-5 h-5" />
-              </Button>
-            </div>
+          <CardFooter className="p-2 flex justify-center items-center border-t bg-muted/50">
+            <PoemActions
+              poem={poem}
+              isFavorite={favorites.has(poem.id)}
+              onToggleFavorite={handleToggleFavorite}
+              audioState={audioState}
+              setAudioState={setAudioState}
+              showEdit={isAdmin}
+            />
           </CardFooter>
         </Card>
       </div>

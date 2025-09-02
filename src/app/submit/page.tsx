@@ -24,7 +24,7 @@ type FormData = {
   poem: string;
   category: string;
   image: FileList;
-  recaptcha: string; // Nuevo campo para el token de reCAPTCHA
+  recaptcha: string;
 };
 
 type Category = {
@@ -34,29 +34,34 @@ type Category = {
 
 const SUBMISSIONS_KEY = 'amor-expressions-submissions';
 
-export default function SubmitPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const { register, handleSubmit, formState: { isSubmitting, errors }, control, reset, watch } = useForm<FormData>();
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [loadingCategories, setLoadingCategories] = React.useState(true);
-  const [imagePreview, setImagePreview] = React.useState<string | null>(null);
-  const [isCaptchaVerified, setIsCaptchaVerified] = React.useState(false);
-
-  const imageFile = watch("image");
-
-  React.useEffect(() => {
-    if (imageFile && imageFile.length > 0) {
-      const file = imageFile[0];
-      const reader = new FileReader();
-      reader.onloadend = () => { setImagePreview(reader.result as string); };
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
+const SubmitPage = () => {
+    // Si estamos en producción, esta página no estará disponible.
+    if (process.env.NODE_ENV === 'production') {
+        return null;
     }
-  }, [imageFile]);
 
-  React.useEffect(() => {
+    const router = useRouter();
+    const { toast } = useToast();
+    const { register, handleSubmit, formState: { isSubmitting, errors }, control, reset, watch } = useForm<FormData>();
+    const [categories, setCategories] = React.useState<Category[]>([]);
+    const [loadingCategories, setLoadingCategories] = React.useState(true);
+    const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+    const [isCaptchaVerified, setIsCaptchaVerified] = React.useState(false);
+
+    const imageFile = watch("image");
+
+    React.useEffect(() => {
+    if (imageFile && imageFile.length > 0) {
+        const file = imageFile[0];
+        const reader = new FileReader();
+        reader.onloadend = () => { setImagePreview(reader.result as string); };
+        reader.readAsDataURL(file);
+    } else {
+        setImagePreview(null);
+    }
+    }, [imageFile]);
+
+    React.useEffect(() => {
     const fetchCategories = async () => {
         setLoadingCategories(true);
         try {
@@ -72,60 +77,60 @@ export default function SubmitPage() {
         }
     }
     fetchCategories();
-  }, [toast]);
+    }, [toast]);
 
-  const onSubmit = async (data: FormData) => {
+    const onSubmit = async (data: FormData) => {
     try {
-      const storedSubmissions = localStorage.getItem(SUBMISSIONS_KEY);
-      const submissions = storedSubmissions ? JSON.parse(storedSubmissions) : [];
-      const newSubmission = { ...data, id: new Date().toISOString(), poem: data.poem };
-      submissions.unshift(newSubmission);
-      localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
+        const storedSubmissions = localStorage.getItem(SUBMISSIONS_KEY);
+        const submissions = storedSubmissions ? JSON.parse(storedSubmissions) : [];
+        const newSubmission = { ...data, id: new Date().toISOString(), poem: data.poem };
+        submissions.unshift(newSubmission);
+        localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(submissions));
 
-      let imageUrl = null;
-      if (data.image && data.image.length > 0) {
+        let imageUrl = null;
+        if (data.image && data.image.length > 0) {
         const file = data.image[0];
         const fileName = `submitted-images/${Date.now()}-${file.name}`;
         imageUrl = await uploadImage(file, fileName);
-      }
+        }
 
-      const submissionsCollection = collection(db, 'submissions');
-      await addDoc(submissionsCollection, {
+        const submissionsCollection = collection(db, 'submissions');
+        await addDoc(submissionsCollection, {
         title: data.title,
         poem: data.poem,
         category: data.category,
         author: data.author || "Anónimo",
         imageUrl: imageUrl,
         submittedAt: Timestamp.now(),
-      });
+        });
 
-      toast({
+        toast({
         title: "¡Gracias por tu envío!",
         description: "Tu poema ha sido enviado para revisión y guardado en 'Mis Envíos'.",
-      });
+        });
 
-      reset();
-      router.push('/collections');
+        reset();
+        router.push('/collections');
 
     } catch (error) {
-      console.error("Error submitting poem:", error);
-      toast({
+        console.error("Error submitting poem:", error);
+        toast({
         variant: "destructive",
         title: "Error al enviar",
         description: "No se pudo procesar tu envío. Inténtalo de nuevo.",
-      });
+        });
     }
-  };
+    };
 
-  return (
+    return (
     <MainLayout>
         <header className="container mx-auto flex items-center gap-4 p-4">
-             <Button variant="ghost" size="icon" onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => router.back()}><ArrowLeft className="w-5 h-5" /></Button>
             <h1 className="text-2xl font-headline text-primary">Enviar Poema</h1>
         </header>
-         <main className="flex-1 container mx-auto py-8 px-4 flex justify-center">
+        <main className="flex-1 container mx-auto py-8 px-4 flex justify-center">
             <Card className="w-full max-w-2xl">
-                 <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <CardHeader>
                         <CardTitle>Envía tu Creación</CardTitle>
                         <CardDescription>Comparte tu talento. Los poemas que envíes se guardarán en tu dispositivo y serán revisados por un administrador antes de ser públicos.</CardDescription>
@@ -150,7 +155,7 @@ export default function SubmitPage() {
                                     </SelectContent>
                                 </Select>
                             )} />
-                             {errors.category && <p className="text-sm text-destructive">{errors.category.message}</p>}
+                            {errors.category && <p className="text-sm text-destructive">{errors.category.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="image">Imagen (Opcional)</Label>
@@ -164,12 +169,11 @@ export default function SubmitPage() {
                         <div className="space-y-2">
                             <Label htmlFor="poem">Cuerpo del Poema</Label>
                             <Textarea id="poem" placeholder="Escribe tu poema aquí..." {...register("poem", { required: "El poema no puede estar vacío." })} rows={10} />
-                             {errors.poem && <p className="text-sm text-destructive">{errors.poem.message}</p>}
+                            {errors.poem && <p className="text-sm text-destructive">{errors.poem.message}</p>}
                         </div>
-                         {/* --- NUEVO CAMPO DE RECAPTCHA --- */}
                         <div className="space-y-2">
                             <Label>Verificación</Label>
-                             <Controller
+                            <Controller
                                 name="recaptcha"
                                 control={control}
                                 rules={{ required: "Por favor, completa la verificación." }}
@@ -187,14 +191,16 @@ export default function SubmitPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                         <Button type="submit" disabled={isSubmitting || loadingCategories || !isCaptchaVerified} className="w-full">
+                        <Button type="submit" disabled={isSubmitting || loadingCategories || !isCaptchaVerified} className="w-full">
                             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4"/>}
                             Enviar Poema para Revisión
                         </Button>
                     </CardFooter>
-                 </form>
+                </form>
             </Card>
         </main>
     </MainLayout>
-  )
+    )
 }
+
+export default SubmitPage;

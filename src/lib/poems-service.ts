@@ -1,80 +1,133 @@
+
 // src/lib/poems-service.ts
 
 'use server';
 
-import { adminDb, adminTimestamp, adminStorage } from './firebase-admin';
+import { getAdminInstances } from './firebase-admin';
 import type { Poem } from './poems-data';
+import algoliasearch from 'algoliasearch';
 import fs from 'fs';
 import path from 'path';
 
-// --- NUEVO: AÑADIMOS LA CONFIGURACIÓN DE ALGOLIA AQUÍ ---
-import algoliasearch from 'algoliasearch';
 
-// Asegúrate de que tus variables de entorno estén disponibles
-const algoliaClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.ALGOLIA_ADMIN_KEY!
-);
-const algoliaIndex = algoliaClient.initIndex('poems');
+// Inicializamos los servicios aquí, llamando a la función getAdminInstances
+const { adminDb, adminTimestamp, adminStorage } = getAdminInstances();
 
-// --- FUNCIÓN PARA OBTENER IMÁGENES PÚBLICAS ---
+const algoliaClient = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID && process.env.ALGOLIA_ADMIN_KEY
+  ? algoliasearch(
+      process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
+      process.env.ALGOLIA_ADMIN_KEY
+    )
+  : null;
+
+const algoliaIndex = algoliaClient ? algoliaClient.initIndex('poems') : null;
+
+export async function syncPoemToAlgolia(poemData: any) {
+    if (!algoliaIndex) {
+        console.error("Algolia client not initialized. Skipping sync.");
+        return;
+    }
+    try {
+        await algoliaIndex.saveObject(poemData);
+        console.log(`Poem with ID ${poemData.objectID} synced with Algolia.`);
+    } catch(error) {
+        console.error(`Error syncing poem ${poemData.objectID} to Algolia:`, error);
+        throw new Error("Could not sync poem to Algolia.");
+    }
+}
+
+export async function getCategoryImages(): Promise<string[]> {
+    try {
+        const imageDirectory = path.join(process.cwd(), 'public', 'image-categorias');
+        const files = fs.readdirSync(imageDirectory);
+        return files
+            .filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
+            .map(file => `/image-categorias/${file}`);
+    } catch (error) {
+        console.error("Error al leer las imágenes de categorías:", error);
+        // Devuelve un array vacío en caso de error para que la UI no se rompa.
+        return [];
+    }
+}
+
 export async function getPublicImages(): Promise<string[]> {
   try {
-    const imageDirectory = path.join(process.cwd(), 'public', 'imagenes-poemas');
-    const files = await fs.promises.readdir(imageDirectory);
-    const imagePaths = files
-      .filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
-      .map(file => `/imagenes-poemas/${file}`);
+    const snapshot = await adminDb.collection('public_images').get();
+    if (snapshot.empty) {
+        console.warn("La colección 'public_images' está vacía o no existe.");
+        return [];
+    }
+    const imagePaths = snapshot.docs.map(doc => doc.data().url as string);
     return imagePaths;
   } catch (error) {
-    console.error("Error al leer el directorio de imágenes públicas:", error);
+    console.error("Error al leer las imágenes públicas desde Firestore:", error);
     return [];
   }
 }
 
-// La función auxiliar sigue siendo útil.
+
 function convertTimestampToString(timestamp: any): string {
+    if (!timestamp) return new Date().toISOString();
+    if (timestamp instanceof adminTimestamp) {
+        return timestamp.toDate().toISOString();
+    }
     if (timestamp && typeof timestamp.toDate === 'function') {
         return timestamp.toDate().toISOString();
     }
-    return timestamp;
+    if (typeof timestamp === 'string') {
+        return timestamp;
+    }
+    if (timestamp._seconds) {
+        return new Date(timestamp._seconds * 1000).toISOString();
+    }
+    return new Date().toISOString();
 }
 
-// --- FUNCIÓN PARA AÑADIR POEMAS COMO ADMIN ---
 type NewAdminPoemData = {
     title: string;
     poem: string;
     category: string;
     author: string;
     imageFile?: File | null;
+    imageUrl?: string;
 };
 
-// --- FUNCIÓN addAdminPoem MODIFICADA ---
-// Ahora también guarda en Algolia
-// --- FUNCIÓN addAdminPoem CORREGIDA Y CENTRALIZADA ---
-export async function addAdminPoem(data: any): Promise<void> {
+export async function addAdminPoem(data: NewAdminPoemData): Promise<Poem> {
+    if (!algoliaIndex) throw new Error("Algolia client not initialized.");
     try {
-        let finalImageUrl = ""; // Para imágenes externas o generadas por IA
-        let finalImage = "";    // Para imágenes locales de /public
+        let finalImageUrl = "";
+        let finalImage = "";
 
-        if (data.imageFile) {
-            // Caso 1: El usuario sube un archivo manualmente
-            const bucket = adminStorage.bucket();
+        if (data.imageUrl && data.imageUrl.startsWith('data:image')) {
+            const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+            const safeTitle = data.title.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+            const filePath = `poem-images/ai-${safeTitle}-${Date.now()}.png`;
+            const file = bucket.file(filePath);
+            
+            const base64EncodedImageString = data.imageUrl.split(',')[1];
+            const buffer = Buffer.from(base64EncodedImageString, 'base64');
+            const mimeType = data.imageUrl.match(/data:(image\/[^;]+);/)?.[1] || 'image/png';
+
+            await file.save(buffer, { metadata: { contentType: mimeType } });
+            await file.makePublic();
+            finalImageUrl = file.publicUrl();
+        } 
+        else if (data.imageFile) {
+            const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
             const filePath = `poemas-admin-imagen/${Date.now()}-${data.imageFile.name}`;
             const buffer = Buffer.from(await data.imageFile.arrayBuffer());
             await bucket.file(filePath).save(buffer, { metadata: { contentType: data.imageFile.type } });
             const file = bucket.file(filePath);
             await file.makePublic();
             finalImageUrl = file.publicUrl();
-        } else if (data.imageUrl) {
-            // Caso 2: La IA generó una imagen y nos pasa la URL
+        } 
+        else if (data.imageUrl) { // Si se proporciona una URL directa (no data URI)
             finalImageUrl = data.imageUrl;
-        } else {
-            // Caso 3: No se subió archivo ni se generó con IA -> Asignar una aleatoria
+        }
+        else {
             const publicImages = await getPublicImages();
             if (publicImages.length > 0) {
-                const randomIndex = Math.floor(Math.random() * publicImages.length);
-                finalImage = publicImages[randomIndex];
+                finalImage = publicImages[Math.floor(Math.random() * publicImages.length)];
             }
         }
 
@@ -84,82 +137,103 @@ export async function addAdminPoem(data: any): Promise<void> {
             category: data.category,
             author: data.author,
             imageUrl: finalImageUrl,
-            image: finalImage, // Guardamos la ruta de la imagen local aquí
+            image: finalImage,
             createdAt: adminTimestamp.now(),
             likes: 0,
             shares: 0,
         };
 
-        // Guardar en Firestore
-        const poemsCollection = adminDb.collection('poems');
-        const docRef = await poemsCollection.add(poemData);
+        const docRef = await adminDb.collection('poems').add(poemData);
         console.log(`Poema guardado en Firestore con ID: ${docRef.id}`);
 
-        // Guardar en Algolia
-        const algoliaObject = {
+        await syncPoemToAlgolia({
             objectID: docRef.id,
-            title: poemData.title,
-            poem: poemData.poem,
-            author: poemData.author,
-            category: poemData.category,
+            ...poemData,
             createdAt: poemData.createdAt.toMillis(),
-            image: poemData.image,         // <-- LÍNEA AÑADIDA
-            imageUrl: poemData.imageUrl,   // <-- LÍNEA AÑADIDA
-        };
-        await algoliaIndex.saveObject(algoliaObject);
-        console.log(`Poema con ID ${docRef.id} guardado en Algolia.`);
+        });
+        
+        return {
+            id: docRef.id,
+            ...poemData,
+            createdAt: convertTimestampToString(poemData.createdAt),
+        } as Poem;
 
     } catch (error) {
         console.error("Error al añadir un nuevo poema:", error);
-        throw new Error("No se pudo añadir el poema a Firestore o Algolia.");
+        throw new Error("No se pudo añadir el poema.");
     }
 }
 
-
-// --- FUNCIÓN PARA ACTUALIZAR LA IMAGEN DE UN POEMA ---
-export async function updatePoemImage(poemId: string, imageUrl: string): Promise<void> {
+export async function updatePoemImage(poemId: string, imageSource: File | string): Promise<string> {
+    if (!algoliaIndex) throw new Error("Algolia client not initialized.");
+    let downloadURL = "";
+    
     try {
+        if (typeof imageSource === 'string') {
+            // Asumimos que es una URL pública y solo la asignamos
+            downloadURL = imageSource;
+        } else {
+            // Es un archivo, lo subimos
+            const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+            const filePath = `poem-images/${poemId}-${Date.now()}-${imageSource.name}`;
+            const buffer = Buffer.from(await imageSource.arrayBuffer());
+            const file = bucket.file(filePath);
+            
+            await file.save(buffer, {
+                metadata: { contentType: imageSource.type }
+            });
+            await file.makePublic();
+            downloadURL = file.publicUrl();
+        }
+
         const poemDocRef = adminDb.collection('poems').doc(poemId);
-        await poemDocRef.update({ imageUrl });
+        await poemDocRef.update({ imageUrl: downloadURL, image: '' }); // Vaciamos 'image' para dar prioridad a 'imageUrl'
+        await algoliaIndex.partialUpdateObject({ objectID: poemId, imageUrl: downloadURL, image: '' });
+        
+        return downloadURL;
+
     } catch (error) {
         console.error(`Error al actualizar la imagen para el poema ${poemId}:`, error);
         throw new Error("No se pudo actualizar la imagen del poema.");
     }
 }
 
-// --- FUNCIÓN PARA ACTUALIZAR UN POEMA ---
 export async function updatePoem(poemId: string, data: { title: string; poem: string }): Promise<void> {
+  if (!algoliaIndex) throw new Error("Algolia client not initialized.");
   try {
       const poemDocRef = adminDb.collection('poems').doc(poemId);
       await poemDocRef.update({
           title: data.title,
           poem: data.poem,
       });
+      await algoliaIndex.partialUpdateObject({
+          objectID: poemId,
+          title: data.title,
+          poem: data.poem,
+      });
   } catch (error) {
       console.error(`Error al actualizar el poema ${poemId}:`, error);
-      throw new Error("No se pudo actualizar el poema en Firestore.");
+      throw new Error("No se pudo actualizar el poema.");
   }
 }
 
-// --- OTRAS FUNCIONES DE LA APLICACIÓN ---
-
-export async function getCategories(): Promise<{ name: string, imageUrl?: string }[]> {
+export async function getCategories(): Promise<{ id: string; name: string, type: string, imageUrl?: string }[]> {
   try {
     const categoriesCollection = adminDb.collection('categories');
     const q = categoriesCollection.orderBy('name');
     const querySnapshot = await q.get();
-    const categories = querySnapshot.docs.map(doc => ({ 
+    return querySnapshot.docs.map(doc => ({ 
         id: doc.id,
-        ...doc.data()
-    })) as { id: string; name: string; imageUrl?: string }[];
-    return categories;
+        name: doc.data().name,
+        type: doc.data().type,
+        imageUrl: doc.data().imageUrl || null
+    }));
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];
   }
 }
 
-// --- FUNCIÓN MODIFICADA PARA PAGINACIÓN ---
 export async function getPoemsForCategory(categoryName: string, limitNum: number): Promise<Poem[]> {
   try {
     const poemsCollection = adminDb.collection('poems');
@@ -169,84 +243,58 @@ export async function getPoemsForCategory(categoryName: string, limitNum: number
                 .limit(limitNum);
 
     const querySnapshot = await q.get();
-    const poems = querySnapshot.docs.map(doc => {
+    return querySnapshot.docs.map(doc => {
         const data = doc.data();
         return {
           id: doc.id,
-          title: data.title,
-          poem: data.poem,
+          ...data,
           createdAt: convertTimestampToString(data.createdAt),
-          likes: data.likes || 0,
-          shares: data.shares || 0,
-          imageUrl: data.imageUrl,
-          image: data.image,
-          photographerName: data.photographerName,
-          photographerUrl: data.photographerUrl,
         } as Poem;
     });
-    return poems;
   } catch (error) {
     console.error(`Error fetching poems for category ${categoryName}:`, error);
     return [];
   }
 }
 
-// --- NUEVA FUNCIÓN PARA POEMAS ALEATORIOS ---
 export async function getRandomPoemsForCategory(categoryName: string, limitNum: number, excludeIds: string[]): Promise<Poem[]> {
     try {
         const poemsCollection = adminDb.collection('poems');
         const q = poemsCollection.where('category', '==', categoryName);
         const querySnapshot = await q.get();
 
-        const allPoemIds = querySnapshot.docs.map(doc => doc.id).filter(id => !excludeIds.includes(id));
+        let allPoemIds = querySnapshot.docs.map(doc => doc.id);
+        if (excludeIds.length > 0) {
+            allPoemIds = allPoemIds.filter(id => !excludeIds.includes(id));
+        }
         
-        if (allPoemIds.length === 0) {
-            return [];
-        }
+        if (allPoemIds.length === 0) return [];
 
-        for (let i = allPoemIds.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [allPoemIds[i], allPoemIds[j]] = [allPoemIds[j], allPoemIds[i]];
-        }
-
-        const randomIdsToFetch = allPoemIds.slice(0, limitNum);
+        const shuffledIds = allPoemIds.sort(() => 0.5 - Math.random());
+        const randomIdsToFetch = shuffledIds.slice(0, limitNum);
         
-        if (randomIdsToFetch.length === 0) {
-            return [];
-        }
+        if (randomIdsToFetch.length === 0) return [];
 
-        const poemPromises = randomIdsToFetch.map(id => poemsCollection.doc(id).get());
-        const poemDocs = await Promise.all(poemPromises);
+        const poemDocs = await adminDb.getAll(...randomIdsToFetch.map(id => poemsCollection.doc(id)));
 
-        const poems = poemDocs.map(doc => {
+        return poemDocs.map(doc => {
             const data = doc.data()!;
             return {
                 id: doc.id,
-                title: data.title,
-                poem: data.poem,
+                ...data,
                 createdAt: convertTimestampToString(data.createdAt),
-                likes: data.likes || 0,
-                shares: data.shares || 0,
-                imageUrl: data.imageUrl,
-                image: data.image,
-                photographerName: data.photographerName,
-                photographerUrl: data.photographerUrl,
             } as Poem;
         });
 
-        return poems;
     } catch (error) {
         console.error(`Error fetching random poems for category ${categoryName}:`, error);
         return [];
     }
 }
 
-// --- FUNCIÓN REINCORPORADA ---
 export async function getPoemById(poemId: string): Promise<(Poem & { category: string }) | null> {
     try {
-        const poemDocRef = adminDb.collection('poems').doc(poemId);
-        const poemDoc = await poemDocRef.get();
-
+        const poemDoc = await adminDb.collection('poems').doc(poemId).get();
         if (!poemDoc.exists) {
             console.warn(`Poem with id ${poemId} not found.`);
             return null;
@@ -254,17 +302,10 @@ export async function getPoemById(poemId: string): Promise<(Poem & { category: s
 
         const data = poemDoc.data()!;
         return {
+            ...data,
             id: poemDoc.id,
-            title: data.title,
-            poem: data.poem,
             category: data.category,
             createdAt: convertTimestampToString(data.createdAt),
-            likes: data.likes || 0,
-            shares: data.shares || 0,
-            imageUrl: data.imageUrl,
-            image: data.image,
-            photographerName: data.photographerName,
-            photographerUrl: data.photographerUrl,
         } as (Poem & { category: string });
 
     } catch (error) {
@@ -273,32 +314,33 @@ export async function getPoemById(poemId: string): Promise<(Poem & { category: s
     }
 }
 
-
 export async function deletePoem(poemId: string): Promise<void> {
+    if (!algoliaIndex) throw new Error("Algolia client not initialized.");
     try {
-        const poemDocRef = adminDb.collection('poems').doc(poemId);
-        await poemDocRef.delete();
+        const poemRef = adminDb.collection('poems').doc(poemId);
+        const poemDoc = await poemRef.get();
+        if (poemDoc.exists && poemDoc.data()?.imageUrl) {
+            // No se puede eliminar la imagen de storage desde el backend de forma segura y simple
+            // La lógica para esto debería estar en un cloud function o manejarse de otra forma.
+            // Por ahora, solo borramos de la DB y Algolia.
+        }
+        await poemRef.delete();
+        await algoliaIndex.deleteObject(poemId);
     } catch (error) {
         console.error(`Error deleting poem with id ${poemId}:`, error);
-        throw new Error("Failed to delete poem from Firestore.");
+        throw new Error("Failed to delete poem from Firestore and/or Algolia.");
     }
 }
 
 export async function getAllPoems(): Promise<Poem[]> {
     try {
-        const poemsCollection = adminDb.collection('poems');
-        const querySnapshot = await poemsCollection.orderBy('createdAt', 'desc').get();
-        
-        return querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                createdAt: convertTimestampToString(data.createdAt),
-            } as Poem;
-        });
-
-    } catch (error: any) {
+        const querySnapshot = await adminDb.collection('poems').orderBy('createdAt', 'desc').get();
+        return querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: convertTimestampToString(doc.data().createdAt),
+        } as Poem));
+    } catch (error) {
         console.error("Error fetching all poems:", error);
         return [];
     }
@@ -314,23 +356,15 @@ export type ImageAsset = {
 
 export async function getImagesForCategory(categoryName: string): Promise<ImageAsset[]> {
   try {
-    const imagesCollection = adminDb.collection('images');
-    const q = imagesCollection.where('category', '==', categoryName);
-    const querySnapshot = await q.get();
-    
-    const images = querySnapshot.docs.map(doc => {
+    const querySnapshot = await adminDb.collection('images').where('category', '==', categoryName).orderBy('createdAt', 'desc').get();
+    return querySnapshot.docs.map(doc => {
         const data = doc.data();
         return {
           id: doc.id,
-          url: data.url,
-          alt: data.alt,
-          category: data.category,
+          ...data,
           createdAt: convertTimestampToString(data.createdAt),
         } as ImageAsset;
     });
-    
-    return images;
-
   } catch (error) {
     console.error(`Error fetching images for category ${categoryName}:`, error);
     return [];
@@ -339,35 +373,46 @@ export async function getImagesForCategory(categoryName: string): Promise<ImageA
 
 export async function getImageById(imageId: string): Promise<ImageAsset | null> {
     try {
-        const imageDocRef = adminDb.collection('images').doc(imageId);
-        const imageDoc = await imageDocRef.get();
-
-        if (!imageDoc.exists) {
-            console.warn(`Image with id ${imageId} not found.`);
-            return null;
-        }
-
+        const imageDoc = await adminDb.collection('images').doc(imageId).get();
+        if (!imageDoc.exists) return null;
         const data = imageDoc.data()!;
         return {
             id: imageDoc.id,
-            url: data.url,
-            alt: data.alt,
-            category: data.category,
+            ...data,
             createdAt: convertTimestampToString(data.createdAt),
         } as ImageAsset;
-
     } catch (error) {
         console.error(`Error fetching image with id ${imageId}:`, error);
         return null;
     }
 }
 
+export async function deleteImage(imageId: string, imageUrl: string): Promise<void> {
+    try {
+        // Eliminar de Firestore
+        const imageDocRef = adminDb.collection('images').doc(imageId);
+        await imageDocRef.delete();
+
+        // Eliminar de Storage
+        const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+        // Extraer la ruta del archivo desde la URL de descarga
+        const url = new URL(imageUrl);
+        const filePath = decodeURIComponent(url.pathname.split('/').pop()!).split('?')[0].split('/').slice(2).join('/');
+
+        if (filePath) {
+            await bucket.file(filePath).delete();
+        }
+
+    } catch (error) {
+        console.error(`Error deleting image ${imageId}:`, error);
+        throw new Error('Failed to delete image.');
+    }
+}
+
+
 export async function getMultimediaForCategory(categoryName: string): Promise<any[]> {
   try {
-    const mediaCollection = adminDb.collection('multimedia');
-    const q = mediaCollection.where('category', '==', categoryName).orderBy('createdAt', 'desc');
-    const querySnapshot = await q.get();
-
+    const querySnapshot = await adminDb.collection('multimedia').where('category', '==', categoryName).orderBy('createdAt', 'desc').get();
     return querySnapshot.docs.map(doc => {
         const data = doc.data();
         return { 

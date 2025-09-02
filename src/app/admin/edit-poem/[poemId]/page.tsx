@@ -1,19 +1,17 @@
 // src/app/admin/edit-poem/[poemId]/page.tsx
-
-import { getAllPoems } from "@/lib/actions";
 import { EditPoemClient } from "./EditPoemClient";
 
-// --- FUNCIÓN AÑADIDA PARA SOLUCIONAR EL ERROR DE BUILD ---
-export async function generateStaticParams() {
-  const poems = await getAllPoems();
-  
-  // Devolvemos un array con el ID de cada poema para que Next.js construya cada página de edición
-  return poems.map((poem) => ({
-    poemId: poem.id,
-  }));
-}
+// --- CAMBIO CLAVE: Esta página ahora es 'dynamic' y se oculta en producción ---
+export const dynamic = 'force-dynamic';
 
-// Página del servidor que pasa el ID del poema al cliente
-export default function EditPoemPage({ params }: { params: { poemId: string } }) {
+export default async function EditPoemPage({ params }: { params: { poemId: string } }) {
+  // Si estamos en producción, esta página no se renderizará, evitando
+  // cualquier intento de ejecutar código de servidor no deseado.
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
+  
+  // En desarrollo, simplemente pasamos el ID al componente cliente.
+  // El cliente se encargará de buscar los datos.
   return <EditPoemClient poemId={params.poemId} />;
 }

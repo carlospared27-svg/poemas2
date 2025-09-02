@@ -1,7 +1,10 @@
 // app/images/[category]/page.tsx
 
 import { getCategories, getImagesForCategory } from "@/lib/actions";
-import { ImageGalleryClient } from "./ImageGalleryClient"; // Cambiamos el nombre del cliente
+import { ImageGalleryClient } from "./ImageGalleryClient"; 
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Le dice a Next.js qué categorías de imágenes existen para crear las páginas de galería
 export async function generateStaticParams() {
@@ -23,14 +26,7 @@ export default async function ImageCategoryPage({ params }: { params: { category
   // Obtenemos las imágenes para esta categoría específica
   const initialImages = await getImagesForCategory(categoryName);
 
-  if (!initialImages || initialImages.length === 0) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background text-foreground">
-        <p>No se encontraron imágenes en la categoría "{categoryName}".</p>
-      </div>
-    );
-  }
-
-  // Renderizamos el componente cliente de la galería, pasándole las imágenes
+  // Renderizamos el componente cliente, pasándole las imágenes
+  // Incluso si initialImages está vacío, el cliente ahora se encarga de mostrar la UI correcta.
   return <ImageGalleryClient initialImages={initialImages} categoryName={categoryName} />;
 }

@@ -3,26 +3,19 @@
 import * as React from "react";
 import { Poem } from "@/lib/poems-data";
 import { Button } from "@/components/ui/button";
-import { X, Heart, Copy, Share2, Play, Pause, ArrowLeft, ArrowRight, Loader2, Mic } from "lucide-react";
+import { X, ArrowLeft, ArrowRight } from "lucide-react";
+import { PoemActions, AudioState } from "./poem-actions";
+import { useAuth } from "@/components/auth-provider";
 
-// --- TIPOS Y PROPS PARA EL MODAL ---
-type AudioState = {
-  isPlaying: boolean;
-  isLoading: boolean;
-  poemId: string | null;
-};
+const isProduction = process.env.NODE_ENV === 'production';
 
-// --- CORRECCIÓN CLAVE: Añadimos 'onRecite' a las props que el componente espera recibir ---
 type PoemModalProps = {
     poem: Poem;
     isFavorite: boolean;
     onClose: () => void;
-    onToggleFavorite: (e: React.MouseEvent, poemId: string) => void;
-    onPlayAudio: (e: React.MouseEvent, text: string, poemId: string) => void;
-    onCopy: (e: React.MouseEvent, text: string) => void;
-    onShare: (e: React.MouseEvent, title: string, text: string) => void;
-    onRecite: (e: React.MouseEvent, poemId: string) => void; // Prop añadida
+    onToggleFavorite: (poemId: string) => void;
     audioState: AudioState;
+    setAudioState: React.Dispatch<React.SetStateAction<AudioState>>;
 };
 
 const WORDS_PER_PAGE = 80;
@@ -32,12 +25,10 @@ export function PoemModal({
     isFavorite,
     onClose,
     onToggleFavorite,
-    onPlayAudio,
-    onCopy,
-    onShare,
-    onRecite, // Se recibe la prop
-    audioState
+    audioState,
+    setAudioState
 }: PoemModalProps) {
+    const { isAdmin } = useAuth();
     const [currentPage, setCurrentPage] = React.useState(0);
 
     const poemPages = React.useMemo(() => {
@@ -66,10 +57,11 @@ export function PoemModal({
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'auto';
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
         };
     }, []);
-
-    const fullPoemText = `${poem.title}\n\n${poem.poem}`;
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in-0" onClick={onClose}>
@@ -97,17 +89,14 @@ export function PoemModal({
                 )}
 
                 <div className="flex justify-center items-center gap-2 border-t pt-4 mt-4">
-                     <Button variant="ghost" size="icon" onClick={(e) => onToggleFavorite(e, poem.id)} title="Añadir a favoritos">
-                        <Heart className={`w-6 h-6 transition-colors ${isFavorite ? 'text-red-500 fill-current' : 'text-muted-foreground'}`} />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={(e) => onPlayAudio(e, fullPoemText, poem.id)} title="Reproducir">
-                        {audioState.isLoading && audioState.poemId === poem.id ? <Loader2 className="w-6 h-6 animate-spin" /> : (audioState.isPlaying && audioState.poemId === poem.id ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />)}
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={(e) => onRecite(e, poem.id)} title="Recitar y Grabar">
-                        <Mic className="w-6 h-6" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={(e) => onCopy(e, fullPoemText)} title="Copiar"><Copy className="w-6 h-6" /></Button>
-                    <Button variant="ghost" size="icon" onClick={(e) => onShare(e, poem.title, poem.poem)} title="Compartir"><Share2 className="w-6 h-6" /></Button>
+                     <PoemActions
+                        poem={poem}
+                        isFavorite={isFavorite}
+                        onToggleFavorite={onToggleFavorite}
+                        audioState={audioState}
+                        setAudioState={setAudioState}
+                        showEdit={!isProduction && isAdmin}
+                     />
                 </div>
             </div>
         </div>

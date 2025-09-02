@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type RecitedPoem = {
   id: string;
@@ -34,20 +35,21 @@ export default function RecitalsPage() {
     const router = useRouter();
     const { toast } = useToast();
     const [recitations, setRecitations] = React.useState<RecitedPoem[]>([]);
-    const [isClient, setIsClient] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
-        // This ensures localStorage is only accessed on the client side
-        setIsClient(true);
+        // Este código solo se ejecuta en el navegador.
         const storedRecitals = localStorage.getItem(RECITED_POEMS_KEY);
         if (storedRecitals) {
             setRecitations(JSON.parse(storedRecitals));
         }
+        setIsLoading(false);
     }, []);
 
     const handleDeleteRecital = (recitalId: string) => {
         const updatedRecitals = recitations.filter(r => r.id !== recitalId);
         setRecitations(updatedRecitals);
+        // localStorage solo se accede aquí, que es código de cliente.
         localStorage.setItem(RECITED_POEMS_KEY, JSON.stringify(updatedRecitals));
         toast({
             title: "Recitado Eliminado",
@@ -55,14 +57,18 @@ export default function RecitalsPage() {
         });
     };
 
-    if (!isClient) {
-        // Render a loading state on the server to avoid hydration errors
+    if (isLoading) {
         return (
             <MainLayout>
                 <div className="container mx-auto py-8 px-4">
                     <h1 className="text-4xl font-headline text-primary mb-8 text-center flex items-center justify-center gap-2">
                         <AudioLines /> Mis Recitados
                     </h1>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-48 w-full" />
+                    </div>
                 </div>
             </MainLayout>
         );

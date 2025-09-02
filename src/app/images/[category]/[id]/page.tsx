@@ -1,3 +1,4 @@
+
 // src/app/images/[category]/[id]/page.tsx
 
 import { getCategories, getImagesForCategory } from "../../../../lib/actions";

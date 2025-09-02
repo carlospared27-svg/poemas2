@@ -1,3 +1,4 @@
+
 // src/lib/actions.ts
 
 'use server';
@@ -8,12 +9,16 @@ import {
     getPoemById,
     updatePoem,
     getCategories,
-    addAdminPoem,
     getAllPoems,
     getImagesForCategory,
     getImageById,
-    getMultimediaForCategory, // <- 1. AÑADIDA A LA LISTA DE IMPORTACIÓN
-    getRandomPoemsForCategory // <-- AÑADIDO: Importamos la nueva función
+    getMultimediaForCategory,
+    getRandomPoemsForCategory,
+    deletePoem,
+    addAdminPoem,
+    syncPoemToAlgolia,
+    getCategoryImages,
+    deleteImage // Importamos la nueva función
 } from './poems-service';
 
 export { 
@@ -22,10 +27,14 @@ export {
     getPoemById, 
     updatePoem,
     getCategories,
-    addAdminPoem,
     getAllPoems,
     getImagesForCategory,
     getImageById,
-    getMultimediaForCategory, // <- 2. AÑADIDA A LA LISTA DE EXPORTACIÓN
-    getRandomPoemsForCategory
+    getMultimediaForCategory,
+    getRandomPoemsForCategory,
+    deletePoem,
+    addAdminPoem,
+    syncPoemToAlgolia,
+    getCategoryImages,
+    deleteImage // Exportamos la nueva función
 };

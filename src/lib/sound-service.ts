@@ -4,6 +4,7 @@
 let audioContext: AudioContext | null = null;
 
 const getAudioContext = (): AudioContext | null => {
+  // --- CORRECCIÓN: Acceso seguro a window ---
   if (typeof window !== 'undefined') {
     if (!audioContext) {
       try {

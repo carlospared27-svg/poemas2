@@ -1,5 +1,4 @@
 // src/app/admin/edit-poem/[poemId]/EditPoemClient.tsx
-
 "use client";
 
 import * as React from "react";
@@ -13,32 +12,38 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth-provider";
 import { Loader2, Save } from "lucide-react";
-import { getPoemById, updatePoem } from "@/lib/actions";
+import { updatePoem, getPoemById } from "@/lib/actions"; // Importamos getPoemById
 import { Poem } from "@/lib/poems-data";
 
 type PoemWithCategory = Poem & {
     category: string;
 };
 
-// El componente ahora recibe 'poemId' como prop
+// El componente ahora recibe el ID del poema como prop
 export function EditPoemClient({ poemId }: { poemId: string }) {
     const { isAdmin, user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
 
+    // Estados para los datos del poema y el estado de carga/guardado
     const [poem, setPoem] = React.useState<PoemWithCategory | null>(null);
     const [title, setTitle] = React.useState("");
     const [content, setContent] = React.useState("");
     const [isLoading, setIsLoading] = React.useState(true);
     const [isSaving, setIsSaving] = React.useState(false);
 
+    // Efecto para redirigir si no es admin
     React.useEffect(() => {
-        if (!poemId || !isAdmin) {
-            // Si el usuario no es admin, lo redirigimos
-            if (user) router.push('/');
-            return;
-        };
+        if (user === null || isAdmin === false) {
+            toast({ variant: "destructive", title: "Acceso denegado" });
+            router.push('/');
+        }
+    }, [isAdmin, user, router, toast]);
 
+    // Efecto para buscar los datos del poema en el cliente
+    React.useEffect(() => {
+        if (!poemId || !isAdmin) return;
+        
         const fetchPoem = async () => {
             setIsLoading(true);
             try {
@@ -52,36 +57,35 @@ export function EditPoemClient({ poemId }: { poemId: string }) {
                     router.push("/");
                 }
             } catch (error) {
+                console.error("Error fetching poem:", error);
                 toast({ variant: "destructive", title: "Error", description: "No se pudo cargar el poema." });
             } finally {
                 setIsLoading(false);
             }
         };
 
-        if(isAdmin) {
-          fetchPoem();
-        }
-    }, [poemId, isAdmin, user, router, toast]);
+        fetchPoem();
+    }, [poemId, isAdmin, router, toast]);
 
     const handleSaveChanges = async () => {
-        if (!poemId || !title || !content) {
+        if (!poem?.id || !title || !content) {
             toast({ variant: "destructive", title: "Faltan datos", description: "El título y el contenido no pueden estar vacíos." });
             return;
         }
 
         setIsSaving(true);
         try {
-            await updatePoem(poemId, { title, poem: content });
+            await updatePoem(poem.id, { title, poem: content });
             toast({ title: "¡Éxito!", description: "El poema ha sido actualizado." });
             router.push(`/category/${encodeURIComponent(poem?.category || '')}`);
-            router.refresh(); // Refresca los datos del servidor
+            router.refresh();
         } catch (error) {
             toast({ variant: "destructive", title: "Error", description: "No se pudieron guardar los cambios." });
         } finally {
             setIsSaving(false);
         }
     };
-
+    
     if (isLoading || !isAdmin) {
         return <MainLayout><div className="flex items-center justify-center h-[80vh]"><Loader2 className="h-8 w-8 animate-spin" /></div></MainLayout>;
     }

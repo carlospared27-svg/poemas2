@@ -36,7 +36,7 @@ const TabsTrigger = React.forwardRef<
       className
     )}
     onClick={(e) => {
-      // Sound is played via the button component so we don't need this.
+      playSound('swoosh');
       if (onClick) onClick(e);
     }}
     {...props}

@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-// --- CORRECCIÓN: Añadido 'where' a la lista de importación ---
-import { collection, query, where, orderBy, getDocs, doc, deleteDoc, addDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, doc, deleteDoc, addDoc, Timestamp } from "firebase/firestore";
 import { useAuth } from "@/components/auth-provider";
 import { Loader2, Check, X, Inbox, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { syncPoemToAlgolia } from "@/lib/actions";
 
 type Submission = {
     id: string;
@@ -35,7 +35,12 @@ type Category = {
     name: string;
 };
 
-export default function ModerationPage() {
+const ModerationPage = () => {
+    // Si estamos en producción, esta página no estará disponible.
+    if (process.env.NODE_ENV === 'production') {
+        return null;
+    }
+
     const { isAdmin, user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -49,7 +54,6 @@ export default function ModerationPage() {
     const [newImageFile, setNewImageFile] = React.useState<File | null>(null);
     const [poemCategories, setPoemCategories] = React.useState<Category[]>([]);
 
-
     React.useEffect(() => {
         if (user && !isAdmin) {
             router.push('/');
@@ -61,14 +65,12 @@ export default function ModerationPage() {
             if (!isAdmin) return;
             setLoading(true);
             try {
-                // Fetch submissions
                 const submissionsCollection = collection(db, 'submissions');
                 const qSubs = query(submissionsCollection, orderBy('submittedAt', 'asc'));
                 const subsSnapshot = await getDocs(qSubs);
                 const fetchedSubmissions = subsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Submission[];
                 setSubmissions(fetchedSubmissions);
 
-                // Fetch poem categories for the edit dropdown
                 const categoriesCollection = collection(db, 'categories');
                 const qCats = query(categoriesCollection, where('type', '==', 'poema'));
                 const catsSnapshot = await getDocs(qCats);
@@ -107,8 +109,8 @@ export default function ModerationPage() {
                 finalImageUrl = await uploadImage(newImageFile, fileName);
                 toast({ id: toastId, title: "Éxito", description: "Imagen reemplazada." });
             } catch (error) {
-                 toast({ id: toastId, variant: "destructive", title: "Error", description: "No se pudo subir la nueva imagen." });
-                 return;
+                toast({ id: toastId, variant: "destructive", title: "Error", description: "No se pudo subir la nueva imagen." });
+                return;
             }
         }
         
@@ -123,7 +125,7 @@ export default function ModerationPage() {
     const handleApprove = async (submission: Submission) => {
         try {
             const poemsCollection = collection(db, 'poems');
-            await addDoc(poemsCollection, {
+            const newPoemData = {
                 title: submission.title,
                 poem: submission.poem,
                 category: submission.category,
@@ -131,6 +133,13 @@ export default function ModerationPage() {
                 imageUrl: submission.imageUrl || null,
                 createdAt: submission.submittedAt,
                 likes: 0,
+            };
+            const docRef = await addDoc(poemsCollection, newPoemData);
+
+            await syncPoemToAlgolia({
+                objectID: docRef.id,
+                ...newPoemData,
+                createdAt: newPoemData.createdAt.toMillis(),
             });
 
             await deleteDoc(doc(db, "submissions", submission.id));
@@ -222,7 +231,7 @@ export default function ModerationPage() {
                             <Label htmlFor="edit-title">Título</Label>
                             <Input id="edit-title" value={editedData.title || ''} onChange={(e) => setEditedData({...editedData, title: e.target.value})} />
                         </div>
-                         <div className="space-y-2">
+                        <div className="space-y-2">
                             <Label htmlFor="edit-author">Autor</Label>
                             <Input id="edit-author" value={editedData.author || ''} onChange={(e) => setEditedData({...editedData, author: e.target.value})} />
                         </div>
@@ -239,7 +248,7 @@ export default function ModerationPage() {
                             <Label htmlFor="edit-poem">Poema</Label>
                             <Textarea id="edit-poem" value={editedData.poem || ''} onChange={(e) => setEditedData({...editedData, poem: e.target.value})} rows={12} />
                         </div>
-                         <div className="space-y-2">
+                        <div className="space-y-2">
                             <Label htmlFor="edit-image">Imagen</Label>
                             {editedData.imageUrl && !newImageFile && <Image src={editedData.imageUrl} alt="Imagen actual" width={200} height={100} className="rounded-md object-cover" />}
                             <Input id="edit-image" type="file" accept="image/*" onChange={(e) => e.target.files && setNewImageFile(e.target.files[0])} />
@@ -255,3 +264,5 @@ export default function ModerationPage() {
         </MainLayout>
     );
 }
+
+export default ModerationPage;

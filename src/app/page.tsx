@@ -1,44 +1,18 @@
-
-"use client";
+// src/app/page.tsx
 
 import * as React from "react";
-import { Onboarding } from "@/components/onboarding";
-import { MainApp } from "@/components/main-app";
 import { MainLayout } from "@/components/layout/main-layout";
-import { Loader2 } from "lucide-react";
+import { OnboardingLoader } from "@/components/onboarding-loader";
 
-
+// La página principal ahora es un Componente de Servidor puro.
+// Su única responsabilidad es definir la estructura de la página.
 export default function Home() {
-  const [showOnboarding, setShowOnboarding] = React.useState<boolean | null>(null);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-        const onboardingCompleted =
-        localStorage.getItem("amor-expressions-onboarding-v1") === "true";
-        setShowOnboarding(!onboardingCompleted);
-    }
-  }, []);
-
-  const handleOnboardingComplete = () => {
-    localStorage.setItem("amor-expressions-onboarding-v1", "true");
-    setShowOnboarding(false);
-  };
   
-  if (showOnboarding === null) {
-     return (
-       <div className="flex items-center justify-center min-h-screen bg-background">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-     )
-  }
-
-  if (showOnboarding) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
-  }
-
+  // Delegamos toda la lógica de cliente (onboarding, carga de datos en cliente)
+  // al nuevo componente OnboardingLoader.
   return (
     <MainLayout>
-        <MainApp />
+        <OnboardingLoader />
     </MainLayout>
   );
 }

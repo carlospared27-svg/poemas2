@@ -29,7 +29,12 @@ type GeneratedPoem = {
     imageUrl?: string;
 };
 
-export default function GeneratePoemsPage() {
+const GeneratePoemsPage = () => {
+    // Si estamos en producción, esta página no estará disponible.
+    if (process.env.NODE_ENV === 'production') {
+        return null;
+    }
+
     const { isAdmin, user } = useAuth();
     const router = useRouter();
     const { toast } = useToast();
@@ -42,10 +47,8 @@ export default function GeneratePoemsPage() {
     const [isLoading, setIsLoading] = React.useState(false);
     const [generatedPoems, setGeneratedPoems] = React.useState<GeneratedPoem[]>([]);
     
-    // --- CORRECCIÓN: Actualizamos los modelos y ponemos Pro como default ---
     const [selectedTextModel, setSelectedTextModel] = React.useState("gemini-1.5-pro-latest");
     const [selectedImageModel, setSelectedImageModel] = React.useState("imagen-3.0-generate-002");
-
 
     React.useEffect(() => {
         if (user && !isAdmin) {
@@ -135,7 +138,6 @@ export default function GeneratePoemsPage() {
                                 <Input id="num-poems" type="number" value={numPoems} onChange={(e) => setNumPoems(Math.max(1, parseInt(e.target.value, 10)))} min="1" max="5"/>
                             </div>
                         </div>
-                        {/* --- SELECTORES DE MODELO ACTUALIZADOS --- */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="text-model">Modelo de Texto</Label>
@@ -147,7 +149,7 @@ export default function GeneratePoemsPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                                 <Label htmlFor="image-model">Modelo de Imagen</Label>
                                 <Select onValueChange={setSelectedImageModel} value={selectedImageModel}>
                                     <SelectTrigger id="image-model"><SelectValue /></SelectTrigger>
@@ -187,3 +189,5 @@ export default function GeneratePoemsPage() {
         </MainLayout>
     );
 }
+
+export default GeneratePoemsPage;
